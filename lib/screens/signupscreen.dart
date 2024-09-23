@@ -18,6 +18,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   var emailcon = TextEditingController();
   var passcon = TextEditingController();
+  var confirmpasscon = TextEditingController();
+  var usernamecon = TextEditingController();
 
   void submit() async {
     if (formkey.currentState!.validate()) {
@@ -87,6 +89,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         fcolor: Colors.white,
                       ),
                       const Gap(40),
+                      TextContent(name: "Create a username", fcolor: Colors.white),
+                      const Gap(5),
+                      Tfields(
+                        field_controller: usernamecon,
+                        suffixicon: Icons.person,
+                      ),
+                      const Gap(20),
                       TextContent(name: "Email", fcolor: Colors.white),
                       const Gap(5),
                       Tfields(
@@ -98,6 +107,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const Gap(5),
                       Password_Tfields(
                         field_controller: passcon, 
+                        showpassIcon: Icons.visibility,
+                        hidepassIcon: Icons.visibility_off,
+                        showpass: true,
+                      ),
+                      const Gap(20),
+                      TextContent(name: " Confirm Password", fcolor: Colors.white),
+                      const Gap(5),
+                      Password_Tfields(
+                        field_controller: confirmpasscon, 
                         showpassIcon: Icons.visibility,
                         hidepassIcon: Icons.visibility_off,
                         showpass: true,

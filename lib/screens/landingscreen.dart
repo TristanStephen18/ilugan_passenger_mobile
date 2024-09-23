@@ -29,7 +29,7 @@ class LandingScreen extends StatelessWidget {
                 color: Colors.white
               ),
               ),
-              const Gap(120),
+              const Gap(200),
               Buttons(
                 onPressed: (){
                   print("Log In");
@@ -37,7 +37,7 @@ class LandingScreen extends StatelessWidget {
                 },
                 name: "Log In",
               ),
-              const Spacer(),
+              const Gap(30),
               Buttons(
                 onPressed: (){
                   Navigator.of(context).push(CupertinoPageRoute(builder: (_)=>SignUpScreen()));

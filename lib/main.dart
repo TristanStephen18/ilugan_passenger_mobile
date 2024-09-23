@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:ilugan_passenger_mobile_app/screens/homescreen.dart';
 import 'firebase_options.dart';
 import 'package:ilugan_passenger_mobile_app/screens/splashscreen.dart';
 
@@ -21,7 +22,7 @@ class Ilugan extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: const SplashScreen(),
+      home: const HomeScreen(),
     );
   }
 }

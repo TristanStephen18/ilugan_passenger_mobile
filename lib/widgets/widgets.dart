@@ -3,6 +3,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Buttons extends StatelessWidget {
@@ -219,3 +220,98 @@ class _Password_TfieldsState extends State<Password_Tfields> {
     );
   }
 }
+
+class AppDrawer extends StatefulWidget {
+  AppDrawer({super.key, required this.username, required this.email});
+
+  String username;
+  String email;
+
+  @override
+  State<AppDrawer> createState() => _AppDrawerState();
+}
+
+class _AppDrawerState extends State<AppDrawer> {
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                DrawerHeader(
+                  decoration: const BoxDecoration(
+                    color: Colors.green,
+                  ),
+                  child: Row(
+                    children: [
+                      const CircleAvatar(
+                        radius: 40,
+                        backgroundImage: AssetImage('assets/icons/pfp_sample.jpg'),
+                      ),
+                      const Gap(10),
+                      Column(
+                        children: [
+                          const Gap(43),
+                          TextContent(name: widget.username.toString(), fontweight: FontWeight.bold,),
+                          TextContent(name: widget.email.toString(), fontsize: 12,)
+                        ],
+                      )
+                    ],
+                  )
+                ),
+                ListTile(
+                  title: TextContent(
+                    name: 'Bus Schedules',
+                    fcolor: const Color.fromARGB(255, 104, 103, 103),
+                  ),
+                  leading: const Icon(
+                    Icons.bus_alert,
+                    color: Color.fromARGB(255, 52, 122, 54),
+                  ),
+                  hoverColor: Colors.green,
+                ),
+                ListTile(
+                  title: TextContent(
+                    name: 'Bug Reports',
+                    fcolor: const Color.fromARGB(255, 104, 103, 103),
+                  ),
+                  leading: const Icon(
+                    Icons.announcement,
+                    color: Color.fromARGB(255, 52, 122, 54),
+                  ),
+                  hoverColor: Colors.green,
+                ),
+                ListTile(
+                  title: TextContent(
+                    name: 'About Us',
+                    fcolor: const Color.fromARGB(255, 104, 103, 103),
+                  ),
+                  leading: const Icon(
+                    Icons.error_sharp,
+                    color: Color.fromARGB(255, 52, 122, 54),
+                  ),
+                  hoverColor: Colors.green,
+                ),
+              ],
+            ),
+          ),
+          ListTile(
+            title: TextContent(
+              name: 'Log Out',
+              fcolor: const Color.fromARGB(255, 104, 103, 103),
+            ),
+            leading: const Icon(
+              Icons.logout,
+              color: Color.fromARGB(255, 52, 122, 54),
+            ),
+            hoverColor: Colors.green,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
