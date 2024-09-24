@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:ilugan_passenger_mobile_app/api/apicalls.dart';
 import 'package:ilugan_passenger_mobile_app/screens/loginscreen.dart';
+import 'package:ilugan_passenger_mobile_app/widgets/classes.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,8 +19,100 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    getemailandusername();
     getCurrentLocation();
-    listenToBusUpdates();
+    // listenToBusUpdates();
+    customIconforMovingBuses();
+    fetchAllBuses();
+  }
+
+  String username = "";
+  String email = "";
+
+  void fetchAllBuses() async {
+    try {
+      // Step 1: Get all companies
+      QuerySnapshot companySnapshot =
+          await FirebaseFirestore.instance.collection('companies').get();
+
+      // Step 2: Loop through each company and get its buses
+      for (var companyDoc in companySnapshot.docs) {
+        String companyId = companyDoc.id;
+
+        DocumentSnapshot<Map<String, dynamic>> snapshot =
+            await FirebaseFirestore.instance
+                .collection('companies')
+                .doc(companyId)
+                .get();
+        var data = snapshot.data() as Map<String, dynamic>;
+
+        String companyname = data['company_name'];
+        // Step 3: Fetch buses from each company's buses sub-collection
+        QuerySnapshot busSnapshot = await FirebaseFirestore.instance
+            .collection('companies')
+            .doc(companyId)
+            .collection('buses')
+            .get();
+
+        for (var busDoc in busSnapshot.docs) {
+          // Cast bus data to a Map<String, dynamic>
+          var busData = busDoc.data() as Map<String, dynamic>;
+
+          String busNumber = busData['bus_number'] ?? '';
+          String plateNumber = busData['plate_number'] ?? '';
+          int availableSeats = busData['available_seats'] ?? 0;
+          int occupiedSeats = busData['occupied_seats'] ?? 0;
+          int reservedSeats = busData['reserved_seats'] ?? 0;
+          GeoPoint geoPoint = busData['current_location'] ?? GeoPoint(0, 0);
+
+          // Convert GeoPoint to LatLng
+          LatLng currentLocation =
+              LatLng(geoPoint.latitude, geoPoint.longitude);
+
+          String address = await ApiCalls().reverseGeocode(
+              currentLocation.latitude, currentLocation.longitude) as String;
+
+          // Add the bus marker to the map
+          setState(() {
+            markers.add(
+              Marker(
+                markerId: MarkerId(busNumber), // Unique ID for each bus
+                position: currentLocation,
+                // infoWindow: InfoWindow(
+                //   title: 'Bus: $busNumber',
+                //   snippet: 'Company Name: $companyname',
+                // ),
+                onTap: () {
+                  DisplayItems().showbusinfo(context, companyname, busNumber,
+                      address, availableSeats, occupiedSeats, reservedSeats);
+                },
+                icon: busmarkers,
+              ),
+            );
+          });
+        }
+      }
+    } catch (e) {
+      print('Error fetching buses: $e');
+    }
+  }
+
+  void getemailandusername() async {
+    print("getusername");
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('passengers')
+        .doc(userId)
+        .get();
+    var data = snapshot.data() as Map<String, dynamic>;
+
+    print(data['email']);
+
+    setState(() {
+      email = data['email'];
+      username = data['username'];
+    });
   }
 
   void listenToBusUpdates() {
@@ -72,6 +166,25 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  BitmapDescriptor busmarkers = BitmapDescriptor.defaultMarker;
+
+  void customIconforMovingBuses() {
+    BitmapDescriptor.fromAssetImage(
+      const ImageConfiguration(
+        size: Size(2, 2), // Reduce the size here
+        devicePixelRatio: 2.5, // Adjust for better scaling
+      ),
+      "assets/icons/moving_bus_icon.png",
+    ).then((icon) {
+      setState(() {
+        busmarkers = icon;
+      });
+      // print(movingbusMarker.toString());
+    }).catchError((error) {
+      print("Error loading custom icon: $error");
+    });
+  }
+
   void addtomarkers() {}
 
   Set<Marker> markers = {};
@@ -100,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void setToLocation(LatLng position) {
-    CameraPosition cameraPosition = CameraPosition(target: position, zoom: 15);
+    CameraPosition cameraPosition = CameraPosition(target: position, zoom: 13);
     mapController.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
     setState(() {});
   }
@@ -149,8 +262,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
       child: Scaffold(
         drawer: AppDrawer(
-          username: 'Sample',
-          email: 'sampleemail@gmail.com',
+          logoutfunc: logout,
+          username: username,
+          email: email,
         ),
         appBar: AppBar(
           title: TextContent(

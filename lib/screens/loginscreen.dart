@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
+import 'package:ilugan_passenger_mobile_app/screens/homescreen.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
+import 'package:quickalert/quickalert.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({super.key});
@@ -18,14 +21,20 @@ class _LoginScreenState extends State<LoginScreen> {
   var emailcon = TextEditingController();
   var passcon = TextEditingController();
 
-  void checklogin(){
-    if (formkey.currentState!.validate()) {
-      // Your login logic here
-      print(emailcon.text);
-    } else {
-      // print(emailcon.text);
-      return;
-    }
+  void checklogin()async{
+    if(formkey.currentState!.validate()){
+    QuickAlert.show(context: context, type: QuickAlertType.loading, text: "Processing", title: "signing you in");
+    await FirebaseAuth.instance.signInWithEmailAndPassword(email: emailcon.text, 
+    password: passcon.text).then((UserCredential cred) async{
+      Navigator.of(context).pop();
+      Navigator.of(context).push(MaterialPageRoute(builder: (_)=>const HomeScreen()));
+    }).catchError((error){
+      Navigator.of(context).pop();
+      QuickAlert.show(context: context, type: QuickAlertType.error, text: error.toString(), title: "OOOOpppss");
+    });
+  }else{
+    return;
+  }
   }
 
   @override

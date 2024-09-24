@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:ilugan_passenger_mobile_app/screens/loginscreen.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
+import 'package:quickalert/quickalert.dart';
 
 class SignUpScreen extends StatefulWidget {
   SignUpScreen({super.key});
@@ -22,10 +25,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
   var usernamecon = TextEditingController();
 
   void submit() async {
-    if (formkey.currentState!.validate()) {
-      // Your login logic here
-      // Navigator.of(context).push(CupertinoPageRoute(builder: (_)=>LoginScreen()));
-    } else {
+    if(formkey.currentState!.validate()){
+    try{
+      QuickAlert.show(context: context, type: QuickAlertType.loading, text: "Creating account");
+      UserCredential usercred = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: emailcon.text, password: passcon.text);
+
+      String id = usercred.user!.uid;
+
+      await FirebaseFirestore.instance.collection('passengers').doc(id).set(
+        {
+          'username': usernamecon.text,
+          'email': emailcon.text,
+          'password': passcon.text
+        }
+      );
+
+      User? user = usercred.user;
+
+      Navigator.of(context).pop();
+      Navigator.of(context).push(MaterialPageRoute(builder: (_)=>LoginScreen()));
+    }on FirebaseAuthException catch(error){
+      Navigator.of(context).pop();
+      QuickAlert.show(context: context, type: QuickAlertType.error, text: "error", title: error.toString());
+    }
+    }else{
       return;
     }
   }

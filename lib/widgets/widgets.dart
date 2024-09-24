@@ -222,10 +222,11 @@ class _Password_TfieldsState extends State<Password_Tfields> {
 }
 
 class AppDrawer extends StatefulWidget {
-  AppDrawer({super.key, required this.username, required this.email});
+  AppDrawer({super.key, required this.username, required this.email, required this.logoutfunc});
 
   String username;
   String email;
+  VoidCallback logoutfunc;
 
   @override
   State<AppDrawer> createState() => _AppDrawerState();
@@ -299,6 +300,7 @@ class _AppDrawerState extends State<AppDrawer> {
             ),
           ),
           ListTile(
+            onTap: widget.logoutfunc,
             title: TextContent(
               name: 'Log Out',
               fcolor: const Color.fromARGB(255, 104, 103, 103),
@@ -312,6 +314,16 @@ class _AppDrawerState extends State<AppDrawer> {
         ],
       ),
     );
+  }
+}
+
+class BusDetails extends StatelessWidget {
+  const BusDetails({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold();
+    // return ScaffoldMessenger();
   }
 }
 
