@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ilugan_passenger_mobile_app/screens/homescreen.dart';
 import 'package:ilugan_passenger_mobile_app/screens/signupscreen.dart';
+import 'package:ilugan_passenger_mobile_app/trial%20screens/psgc.dart';
 import 'firebase_options.dart';
 import 'package:ilugan_passenger_mobile_app/screens/splashscreen.dart';
 
@@ -24,7 +25,8 @@ class Ilugan extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: FirebaseAuth.instance.currentUser == null ? const SplashScreen() : const HomeScreen(),
+      // home: const ApiTry(),
+      home: const SplashScreen(),
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:ilugan_passenger_mobile_app/api/apicalls.dart';
 import 'package:ilugan_passenger_mobile_app/screens/loginscreen.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/classes.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,97 +24,98 @@ class _HomeScreenState extends State<HomeScreen> {
     getCurrentLocation();
     // listenToBusUpdates();
     customIconforMovingBuses();
-    fetchAllBuses();
+    fetchBusesForCompany();
   }
 
+  LatLng myloc = const LatLng(120.56463553247369, 120.56463553247369);
   String username = "";
   String email = "";
 
-  void fetchAllBuses() async {
-    try {
-      // Step 1: Get all companies
-      QuerySnapshot companySnapshot =
-          await FirebaseFirestore.instance.collection('companies').get();
+  void fetchBusesForCompany() {
+  String companyId = '1CzPhECXc8PFJQP4rfGzwW77gKp1';
 
-      // Step 2: Loop through each company and get its buses
-      for (var companyDoc in companySnapshot.docs) {
-        String companyId = companyDoc.id;
+  FirebaseFirestore.instance
+      .collection('companies')
+      .doc(companyId)
+      .collection('buses')
+      .snapshots()
+      .listen((busSnapshot) async {
+    for (var busDoc in busSnapshot.docs) {
+      // Cast bus data to a Map<String, dynamic>
+      var busData = busDoc.data() as Map<String, dynamic>;
 
-        DocumentSnapshot<Map<String, dynamic>> snapshot =
-            await FirebaseFirestore.instance
-                .collection('companies')
-                .doc(companyId)
-                .get();
-        var data = snapshot.data() as Map<String, dynamic>;
+      String busNumber = busData['bus_number'] ?? '';
+      String plateNumber = busData['plate_number'] ?? '';
+      int availableSeats = busData['available_seats'] ?? 0;
+      int occupiedSeats = busData['occupied_seats'] ?? 0;
+      int reservedSeats = busData['reserved_seats'] ?? 0;
+      GeoPoint geoPoint = busData['current_location'] ?? GeoPoint(0, 0);
 
-        String companyname = data['company_name'];
-        // Step 3: Fetch buses from each company's buses sub-collection
-        QuerySnapshot busSnapshot = await FirebaseFirestore.instance
-            .collection('companies')
-            .doc(companyId)
-            .collection('buses')
-            .get();
+      // Convert GeoPoint to LatLng
+      LatLng currentLocation = LatLng(geoPoint.latitude, geoPoint.longitude);
 
-        for (var busDoc in busSnapshot.docs) {
-          // Cast bus data to a Map<String, dynamic>
-          var busData = busDoc.data() as Map<String, dynamic>;
+      // Reverse geocoding to get address
+      String address = await ApiCalls()
+          .reverseGeocode(currentLocation.latitude, currentLocation.longitude);
 
-          String busNumber = busData['bus_number'] ?? '';
-          String plateNumber = busData['plate_number'] ?? '';
-          int availableSeats = busData['available_seats'] ?? 0;
-          int occupiedSeats = busData['occupied_seats'] ?? 0;
-          int reservedSeats = busData['reserved_seats'] ?? 0;
-          GeoPoint geoPoint = busData['current_location'] ?? GeoPoint(0, 0);
-
-          // Convert GeoPoint to LatLng
-          LatLng currentLocation =
-              LatLng(geoPoint.latitude, geoPoint.longitude);
-
-          String address = await ApiCalls().reverseGeocode(
-              currentLocation.latitude, currentLocation.longitude) as String;
-
-          // Add the bus marker to the map
-          setState(() {
-            markers.add(
-              Marker(
-                markerId: MarkerId(busNumber), // Unique ID for each bus
-                position: currentLocation,
-                // infoWindow: InfoWindow(
-                //   title: 'Bus: $busNumber',
-                //   snippet: 'Company Name: $companyname',
-                // ),
-                onTap: () {
-                  DisplayItems().showbusinfo(context, companyname, busNumber,
-                      address, availableSeats, occupiedSeats, reservedSeats);
-                },
-                icon: busmarkers,
-              ),
-            );
-          });
-        }
-      }
-    } catch (e) {
-      print('Error fetching buses: $e');
+      // Add or update the bus marker on the map
+      setState(() {
+        markers.add(
+          Marker(
+            markerId: MarkerId(busNumber), // Unique marker ID
+            position: currentLocation,
+            onTap: () {
+              DisplayItems().showbusinfo(
+                  context,
+                  'Company Name', // You may add company name if needed
+                  busNumber,
+                  plateNumber,
+                  address,
+                  availableSeats,
+                  occupiedSeats,
+                  reservedSeats,
+                  companyId,
+                  myloc,
+                  hasreservation);
+            },
+            icon: busmarkers,
+          ),
+        );
+      });
     }
-  }
+  }, onError: (e) {
+    print('Error fetching buses: $e');
+  });
+}
 
-  void getemailandusername() async {
-    print("getusername");
-    String userId = FirebaseAuth.instance.currentUser!.uid;
-    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
-        .instance
-        .collection('passengers')
-        .doc(userId)
-        .get();
-    var data = snapshot.data() as Map<String, dynamic>;
 
-    print(data['email']);
+  bool hasreservation = false;
 
-    setState(() {
-      email = data['email'];
-      username = data['username'];
-    });
-  }
+  void getemailandusername() {
+  print("Listening for user data changes");
+
+  String userId = FirebaseAuth.instance.currentUser!.uid;
+
+  FirebaseFirestore.instance
+      .collection('passengers')
+      .doc(userId)
+      .snapshots()
+      .listen((DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    if (snapshot.exists) {
+      var data = snapshot.data() as Map<String, dynamic>;
+
+      setState(() {
+        email = data['email'];
+        username = data['username'];
+        hasreservation = data['hasreservation'];
+      });
+
+      print('Updated email: ${data['email']}');
+    } else {
+      print("Document does not exist");
+    }
+  });
+}
 
   void listenToBusUpdates() {
     print('Executed');
@@ -198,6 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
         distanceFilter: 10,
       ),
     ).listen((position) {
+      myloc = LatLng(position.latitude, position.longitude);
       LatLng currentPosition = LatLng(position.latitude, position.longitude);
       markers.removeWhere((marker) => marker.markerId.value == 'user_location');
       markers.add(
@@ -255,6 +258,27 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void showQr() {
+  print('clicked');
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Reservation Ticket'),
+        content: SizedBox(
+          height: 200,  // Set a fixed height for the QR container
+          width: 200,   // Set a fixed width for the QR container
+          child: QrImageView(
+            size: 150,  // Set the size of the QR code inside
+            data: FirebaseAuth.instance.currentUser!.uid.toString(),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+
   late GoogleMapController mapController;
 
   @override
@@ -277,7 +301,7 @@ class _HomeScreenState extends State<HomeScreen> {
           actions: [
             IconButton(
                 onPressed: () {},
-                icon: Icon(
+                icon: const Icon(
                   Icons.notifications,
                   color: Colors.white,
                 ))
@@ -295,6 +319,19 @@ class _HomeScreenState extends State<HomeScreen> {
             markers: markers,
           ),
         ),
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.only(bottom: 20.0),
+          child: Visibility(
+            visible: hasreservation,
+              child: SizedBox(
+                height: 100,
+                width:  100,
+                  child: FloatingActionButton(
+            onPressed: showQr,
+            child: const Icon(Icons.qr_code, size: 90,),
+          ))),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );
   }

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -40,7 +42,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         }
       );
 
-      User? user = usercred.user;
+      // User? user = usercred.user;
 
       Navigator.of(context).pop();
       Navigator.of(context).push(MaterialPageRoute(builder: (_)=>LoginScreen()));
