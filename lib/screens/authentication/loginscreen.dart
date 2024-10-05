@@ -1,58 +1,40 @@
-// ignore_for_file: use_build_context_synchronously
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
-import 'package:ilugan_passenger_mobile_app/screens/loginscreen.dart';
+import 'package:ilugan_passenger_mobile_app/screens/userscreens/homescreen.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 import 'package:quickalert/quickalert.dart';
 
-class SignUpScreen extends StatefulWidget {
-  SignUpScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  LoginScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _LoginScreenState extends State<LoginScreen> {
 
   final formkey = GlobalKey<FormState>();
 
   var emailcon = TextEditingController();
   var passcon = TextEditingController();
-  var confirmpasscon = TextEditingController();
-  var usernamecon = TextEditingController();
 
-  void submit() async {
+  void checklogin()async{
     if(formkey.currentState!.validate()){
-    try{
-      QuickAlert.show(context: context, type: QuickAlertType.loading, text: "Creating account");
-      UserCredential usercred = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: emailcon.text, password: passcon.text);
-
-      String id = usercred.user!.uid;
-
-      await FirebaseFirestore.instance.collection('passengers').doc(id).set(
-        {
-          'username': usernamecon.text,
-          'email': emailcon.text,
-          'password': passcon.text
-        }
-      );
-
-      // User? user = usercred.user;
-
+    QuickAlert.show(context: context, type: QuickAlertType.loading, text: "Processing", title: "signing you in");
+    await FirebaseAuth.instance.signInWithEmailAndPassword(email: emailcon.text, 
+    password: passcon.text).then((UserCredential cred) async{
       Navigator.of(context).pop();
-      Navigator.of(context).push(MaterialPageRoute(builder: (_)=>LoginScreen()));
-    }on FirebaseAuthException catch(error){
+      Navigator.of(context).push(MaterialPageRoute(builder: (_)=>const HomeScreen()));
+    }).catchError((error){
       Navigator.of(context).pop();
-      QuickAlert.show(context: context, type: QuickAlertType.error, text: "error", title: error.toString());
-    }
-    }else{
-      return;
-    }
+      QuickAlert.show(context: context, type: QuickAlertType.error, text: error.toString(), title: "OOOOpppss");
+    });
+  }else{
+    return;
+  }
   }
 
   @override
@@ -63,7 +45,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 72, 141, 75),
+      backgroundColor: const Color.fromARGB(255, 226, 46, 46),
       appBar: AppBar(
         title: TextContent(
           name: "Back",
@@ -97,30 +79,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: Column(
               children: [
                 Container(
-                  height: screenHeight * 0.72,
+                  height: screenHeight * 0.6,
                   padding: const EdgeInsets.all(30.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TextContent(
-                        name: "Create your ILugan Account",
+                        name: "Hello.",
                         fcolor: Colors.white,
-                        fontsize: 22,
+                        fontsize: 33,
                         fontweight: FontWeight.bold,
                       ),
-                      const Gap(3),
                       TextContent(
-                        name: "Please fill in the following",
+                        name: "Welcome back! Kindly enter your",
                         fcolor: Colors.white,
                       ),
+                      TextContent(name: "login details. ", fcolor: Colors.white),
                       const Gap(40),
-                      TextContent(name: "Create a username", fcolor: Colors.white),
-                      const Gap(5),
-                      Tfields(
-                        field_controller: usernamecon,
-                        suffixicon: Icons.person,
-                      ),
-                      const Gap(20),
                       TextContent(name: "Email", fcolor: Colors.white),
                       const Gap(5),
                       Tfields(
@@ -128,19 +103,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         suffixicon: Icons.mail_outline,
                       ),
                       const Gap(20),
-                      TextContent(name: " Create Password", fcolor: Colors.white),
+                      TextContent(name: "Password", fcolor: Colors.white),
                       const Gap(5),
                       Password_Tfields(
                         field_controller: passcon, 
-                        showpassIcon: Icons.visibility,
-                        hidepassIcon: Icons.visibility_off,
-                        showpass: true,
-                      ),
-                      const Gap(20),
-                      TextContent(name: " Confirm Password", fcolor: Colors.white),
-                      const Gap(5),
-                      Password_Tfields(
-                        field_controller: confirmpasscon, 
                         showpassIcon: Icons.visibility,
                         hidepassIcon: Icons.visibility_off,
                         showpass: true,
@@ -160,14 +126,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
                 Container(
-                  height: screenHeight * 0.18,
+                  height: screenHeight * 0.4,
                   width: screenWidth,
                   color: Colors.white,
                   child: Padding(
-                    padding: const EdgeInsetsDirectional.only(bottom: 50),
+                    padding: const EdgeInsetsDirectional.only(bottom: 89),
                     child: Align(
                       alignment: Alignment.bottomCenter,
-                      child: EButtons(onPressed: submit, name: "Sign Up"),
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 90),
+                        child: EButtons(onPressed: checklogin, name: "Log In", tcolor: Colors.white, bcolor: Colors.green,),
+                      ),
                     ),
                   ),
                 ),

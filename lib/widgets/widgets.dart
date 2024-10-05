@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ilugan_passenger_mobile_app/screens/userscreens/profile.dart';
 
 class Buttons extends StatelessWidget {
   Buttons({
@@ -44,11 +45,15 @@ class EButtons extends StatelessWidget {
   EButtons({
     super.key,
     required this.onPressed,
-    required this.name
+    required this.name,
+    this.bcolor,
+    this.tcolor
   });
 
   final VoidCallback onPressed;
   String name = "";
+  Color? bcolor;
+  Color? tcolor;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +61,7 @@ class EButtons extends StatelessWidget {
       onPressed: onPressed, 
       style: ElevatedButton.styleFrom(
         fixedSize: Size(MediaQuery.sizeOf(context).width - 150, 60),
-        backgroundColor: Colors.green,  
+        backgroundColor: bcolor,  
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10)
         ),
@@ -67,7 +72,7 @@ class EButtons extends StatelessWidget {
         name: name,
         fontsize: 20,
         fontweight: FontWeight.bold,
-        fcolor: const Color.fromARGB(255, 65, 26, 23)
+        fcolor: tcolor
         ),
       
       );
@@ -106,12 +111,15 @@ class Tfields extends StatelessWidget {
     super.key,
     required this.field_controller,
     this.suffixicon,
-    this.label
+    this.label,
+    this.prefix
     });
 
     var field_controller = TextEditingController();
     IconData? suffixicon;
     String? label= "";
+    Widget? prefix;
+
 
   @override
   Widget build(BuildContext context) {
@@ -124,21 +132,84 @@ class Tfields extends StatelessWidget {
             return null;
           },
       style: const TextStyle(
-        color: Colors.white
+        color: Colors.black
       ),
       decoration: InputDecoration(
+        prefix: prefix,
         fillColor: Colors.transparent,
         filled: true,
-        suffixIcon: Icon(suffixicon, color: Colors.white,),
+        suffixIcon: Icon(suffixicon, color: Colors.black,),
          enabledBorder: const UnderlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.white, 
+            color: Colors.black, 
             width: 1.0,
           ),
         ),
         focusedBorder: const UnderlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.white,
+            color: Colors.black,
+            width: 2.0,
+          ),
+        ),
+      
+        errorBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.black, 
+            width: 1.0,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class PTfields extends StatelessWidget {
+  PTfields({
+    super.key,
+    required this.field_controller,
+    this.suffixicon,
+    this.label,
+    this.prefix
+    });
+
+    var field_controller = TextEditingController();
+    IconData? suffixicon;
+    String? label= "";
+    Widget? prefix;
+
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      // maxLines: 10,
+      // minLines: 10,
+      maxLength: 10,
+      // maxLines: 10,
+      keyboardType: TextInputType.number,
+      controller: field_controller,
+      validator: (value) {
+          if(value == null || value.isEmpty){
+            return 'Please fill up this field';
+            }
+            return null;
+          },
+      style: const TextStyle(
+        color: Colors.black
+      ),
+      decoration: InputDecoration(
+        prefix: prefix,
+        fillColor: Colors.transparent,
+        filled: true,
+        suffixIcon: Icon(suffixicon, color: Colors.black,),
+         enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.black, 
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.black,
             width: 2.0,
           ),
         ),
@@ -187,7 +258,7 @@ class _Password_TfieldsState extends State<Password_Tfields> {
       },
       obscureText: widget.showpass,
       style: const TextStyle(
-        color: Colors.white
+        color: Colors.black
       ),
       decoration: InputDecoration(
         fillColor: Colors.transparent,
@@ -196,16 +267,16 @@ class _Password_TfieldsState extends State<Password_Tfields> {
           setState(() {
             widget.showpass = !widget.showpass;
           });
-        }, icon:Icon( widget.showpass ? widget.hidepassIcon : widget.showpassIcon, color: Colors.white,)),
+        }, icon:Icon( widget.showpass ? widget.hidepassIcon : widget.showpassIcon, color: Colors.black,)),
          enabledBorder: const UnderlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.white, 
+            color: Colors.black, 
             width: 1.0,
           ),
         ),
         focusedBorder: const UnderlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.white,
+            color: Colors.black,
             width: 2.0,
           ),
         ),
@@ -244,12 +315,12 @@ class _AppDrawerState extends State<AppDrawer> {
               children: [
                 DrawerHeader(
                   decoration: const BoxDecoration(
-                    color: Colors.green,
+                    color: Colors.red,
                   ),
                   child: Row(
                     children: [
                       const CircleAvatar(
-                        radius: 40,
+                        radius: 30,
                         backgroundImage: AssetImage('assets/icons/pfp_sample.jpg'),
                       ),
                       const Gap(10),
@@ -270,21 +341,38 @@ class _AppDrawerState extends State<AppDrawer> {
                   ),
                   leading: const Icon(
                     Icons.bus_alert,
-                    color: Color.fromARGB(255, 52, 122, 54),
+                    color: Colors.red,
                   ),
-                  hoverColor: Colors.green,
+                  hoverColor: Colors.red,
                 ),
-                ListTile(
+                const Divider(),
+                 ListTile(
                   title: TextContent(
-                    name: 'Bug Reports',
+                    name: 'Passenger Profile',
                     fcolor: const Color.fromARGB(255, 104, 103, 103),
                   ),
                   leading: const Icon(
-                    Icons.announcement,
-                    color: Color.fromARGB(255, 52, 122, 54),
+                    Icons.person,
+                    color: Colors.red,
+                  ),
+                  onTap: (){
+                    Navigator.of(context).push(MaterialPageRoute(builder: (_)=>const ProfileScreen()));
+                  },
+                  hoverColor: Colors.green,
+                ),
+                const Divider(),
+                ListTile(
+                  title: TextContent(
+                    name: 'Transaction History',
+                    fcolor: const Color.fromARGB(255, 104, 103, 103),
+                  ),
+                  leading: const Icon(
+                    Icons.history,
+                    color: Colors.red,
                   ),
                   hoverColor: Colors.green,
                 ),
+                const Divider(),
                 ListTile(
                   title: TextContent(
                     name: 'About Us',
@@ -292,9 +380,9 @@ class _AppDrawerState extends State<AppDrawer> {
                   ),
                   leading: const Icon(
                     Icons.error_sharp,
-                    color: Color.fromARGB(255, 52, 122, 54),
+                    color: Colors.red,
                   ),
-                  hoverColor: Colors.green,
+                  hoverColor: Colors.red,
                 ),
               ],
             ),
@@ -307,11 +395,70 @@ class _AppDrawerState extends State<AppDrawer> {
             ),
             leading: const Icon(
               Icons.logout,
-              color: Color.fromARGB(255, 52, 122, 54),
+              color: Colors.red,
             ),
-            hoverColor: Colors.green,
+            hoverColor: Colors.red,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ProfileTfields extends StatefulWidget {
+  ProfileTfields({
+    super.key,
+    // required this.field_controller,
+    this.suffixicon,
+    this.label,
+    this.prefix,
+    this.data,
+    this.isreadable
+    });
+
+    // var field_controller = TextEditingController();
+    IconData? suffixicon;
+    String? label= "";
+    Widget? prefix;
+    String? data;
+    bool? isreadable;
+
+  @override
+  State<ProfileTfields> createState() => _ProfileTfieldsState();
+}
+
+class _ProfileTfieldsState extends State<ProfileTfields> {
+
+  bool togglereadonly = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      textAlign: TextAlign.center,
+      readOnly: togglereadonly,
+      style: const TextStyle(
+        color: Color.fromRGBO(0, 0, 0, 1)
+      ),
+      validator: (value) {
+        if(value == null || value.isEmpty){
+          return 'Please fill up this field';
+          }
+          return null;
+      },
+      initialValue: widget.data,
+      decoration: InputDecoration(
+        prefix: widget.prefix,
+        fillColor: Colors.transparent,
+        filled: true,
+        suffixIcon: IconButton(onPressed: (){
+          setState(() {
+            togglereadonly = !togglereadonly;
+          });
+        }, icon: Icon(widget.suffixicon, color: Colors.black,),),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(40) 
+        ),
+        label: TextContent(name: '${widget.label}', fcolor: Colors.black,)
       ),
     );
   }

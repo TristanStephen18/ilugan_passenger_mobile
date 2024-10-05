@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ilugan_passenger_mobile_app/api/apicalls.dart';
-import 'package:ilugan_passenger_mobile_app/screens/loginscreen.dart';
+import 'package:ilugan_passenger_mobile_app/screens/authentication/loginscreen.dart';
+import 'package:ilugan_passenger_mobile_app/screens/userscreens/notification.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/classes.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -291,16 +292,27 @@ class _HomeScreenState extends State<HomeScreen> {
           email: email,
         ),
         appBar: AppBar(
-          title: TextContent(
-            name: 'Homepage',
-            fcolor: Colors.white,
+          title: Row(
+            children: [
+              TextContent(
+                name: 'ILugan',
+                fcolor: Colors.white,
+              ),
+              const Image(
+              image: AssetImage("assets/images/logo/logo.png"),
+              height: 32,
+              width: 32,
+            ),
+            ],
           ),
           centerTitle: true,
-          backgroundColor: Colors.green,
+          backgroundColor: const Color.fromARGB(255, 226, 46, 46),
           iconTheme: const IconThemeData(color: Colors.white),
           actions: [
             IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_)=>NotificationsPage()));
+                },
                 icon: const Icon(
                   Icons.notifications,
                   color: Colors.white,

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -91,7 +92,7 @@ class DisplayItems {
                   ],
                 ),
                 TextContent(
-                  name: '------------------------------>',
+                  name: '-------------------->',
                   fcolor: Colors.black,
                   fontweight: FontWeight.bold,
                 ),
@@ -244,5 +245,16 @@ class DisplayItems {
         ),
       ),
     ));
+  }
+}
+
+class UserDataGetter{
+  String getusername(){
+    String username = "";
+    User? user = FirebaseAuth.instance.currentUser;
+
+    
+
+    return username;
   }
 }

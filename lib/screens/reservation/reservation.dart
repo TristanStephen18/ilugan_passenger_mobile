@@ -8,7 +8,7 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ilugan_passenger_mobile_app/api/apicalls.dart';
-import 'package:ilugan_passenger_mobile_app/screens/homescreen.dart';
+import 'package:ilugan_passenger_mobile_app/screens/userscreens/homescreen.dart';
 import 'package:ilugan_passenger_mobile_app/screens/reservation/widgets.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 import 'package:status_alert/status_alert.dart';
@@ -164,6 +164,7 @@ class _SeatRservationScreenState extends State<SeatRservationScreen> {
         print('Reserved');
         updatebusdata(seatsavail, occ, reserved);
         updateDocument();
+        Navigator.of(context).pop();
       }).catchError((error) {
         print('error');
       });
@@ -190,6 +191,7 @@ class _SeatRservationScreenState extends State<SeatRservationScreen> {
         print('Reserved + 1');
         updatebusdata(seatsavail, occ, reserved);
         updateDocument();
+        Navigator.of(context).pop();
       }).catchError((error) {
         print(error);
       });
@@ -244,7 +246,7 @@ class _SeatRservationScreenState extends State<SeatRservationScreen> {
                   ),
                   const Image(
                     image: AssetImage('assets/icons/dagupan_bus.png'),
-                    height: 150,
+                    height: 100,
                   ),
                   const Gap(10),
                   TextContent(
@@ -266,7 +268,7 @@ class _SeatRservationScreenState extends State<SeatRservationScreen> {
                   TextContent(
                     name: 'From: $currentlocc',
                     fcolor: Colors.white,
-                    fontsize: 20,
+                    fontsize: 15,
                     fontweight: FontWeight.bold,
                   ),
                   const Gap(8),

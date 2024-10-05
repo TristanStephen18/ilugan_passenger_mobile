@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ilugan_passenger_mobile_app/screens/loginscreen.dart';
-import 'package:ilugan_passenger_mobile_app/screens/signupscreen.dart';
+import 'package:ilugan_passenger_mobile_app/screens/authentication/loginscreen.dart';
+import 'package:ilugan_passenger_mobile_app/screens/authentication/signupscreen.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 
 class LandingScreen extends StatelessWidget {
@@ -12,7 +12,7 @@ class LandingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 72, 141, 75),
+      backgroundColor: const Color.fromARGB(255, 226, 46, 46),
       body: Center(
         child: Column(
           children: [
@@ -32,7 +32,6 @@ class LandingScreen extends StatelessWidget {
               const Gap(200),
               Buttons(
                 onPressed: (){
-                  print("Log In");
                   Navigator.of(context).push(CupertinoPageRoute(builder: (_)=>LoginScreen()));
                 },
                 name: "Log In",
@@ -42,7 +41,7 @@ class LandingScreen extends StatelessWidget {
                 onPressed: (){
                   Navigator.of(context).push(CupertinoPageRoute(builder: (_)=>SignUpScreen()));
               }, name: "Sign Up"),
-              const Gap(160)
+              const Spacer()
           ],
         ),
       ),
