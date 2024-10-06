@@ -19,29 +19,20 @@ class LandingScreen extends StatelessWidget {
             const Gap(50),
             Image(
               image: const AssetImage("assets/images/logo/logo.png"),
-              width: MediaQuery.sizeOf(context).width/2,
+              width: MediaQuery.sizeOf(context).width / 2,
               height: 250,
             ),
-            Text(
-              "ILugan",
-              style: GoogleFonts.inter(
-                fontSize: 40,
-                color: Colors.white
-              ),
-              ),
-              const Gap(200),
-              Buttons(
-                onPressed: (){
-                  Navigator.of(context).push(CupertinoPageRoute(builder: (_)=>LoginScreen()));
-                },
-                name: "Log In",
-              ),
-              const Gap(30),
-              Buttons(
-                onPressed: (){
-                  Navigator.of(context).push(CupertinoPageRoute(builder: (_)=>SignUpScreen()));
-              }, name: "Sign Up"),
-              const Spacer()
+            TextContent(name: 'Ilugan', fontsize: 40, fcolor: Colors.white,),
+            TextContent(name: 'Your friendly bus acquaintance', fcolor: Colors.white, fontsize: 20,),
+            const Spacer(),
+            Buttons(
+              onPressed: () {
+                Navigator.of(context)
+                    .push(CupertinoPageRoute(builder: (_) => LoginScreen()));
+              },
+              name: "Get Started",
+            ),
+            const Spacer()
           ],
         ),
       ),

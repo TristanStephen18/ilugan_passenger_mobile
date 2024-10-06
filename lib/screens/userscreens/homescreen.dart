@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ilugan_passenger_mobile_app/api/apicalls.dart';
 import 'package:ilugan_passenger_mobile_app/screens/authentication/loginscreen.dart';
+import 'package:ilugan_passenger_mobile_app/screens/index/landingscreen2.dart';
 import 'package:ilugan_passenger_mobile_app/screens/userscreens/notification.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/classes.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
@@ -217,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void setToLocation(LatLng position) {
-    CameraPosition cameraPosition = CameraPosition(target: position, zoom: 13);
+    CameraPosition cameraPosition = CameraPosition(target: position, zoom: 15);
     mapController.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
     setState(() {});
   }
@@ -255,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void logout() async {
     await FirebaseAuth.instance.signOut();
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => LoginScreen()),
+      MaterialPageRoute(builder: (_) => LandingScreen2()),
     );
   }
 
@@ -306,7 +307,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           centerTitle: true,
-          backgroundColor: const Color.fromARGB(255, 226, 46, 46),
+          backgroundColor: Colors.redAccent,
           iconTheme: const IconThemeData(color: Colors.white),
           actions: [
             IconButton(

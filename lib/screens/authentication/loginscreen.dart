@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
+import 'package:ilugan_passenger_mobile_app/screens/authentication/signupscreen.dart';
 import 'package:ilugan_passenger_mobile_app/screens/userscreens/homescreen.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 import 'package:quickalert/quickalert.dart';
@@ -45,17 +46,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 226, 46, 46),
+      backgroundColor: Colors.redAccent,
       appBar: AppBar(
-        title: TextContent(
-          name: "Back",
-          fontsize: 15,
-          fcolor: Colors.white,
-        ),
+        centerTitle: true,
+        toolbarHeight: 100,
+        title:TextContent(name: 'Log in', fontsize: 
+        30, fcolor: Colors.white, fontweight: FontWeight.w500,),
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios,
-            color: Colors.white,
+            color: Colors.yellow,
           ),
           onPressed: () {
             Navigator.pop(context);
@@ -64,8 +64,8 @@ class _LoginScreenState extends State<LoginScreen> {
         actions: const [
           Image(
             image: AssetImage("assets/images/logo/logo.png"),
-            height: 32,
-            width: 32,
+            height: 50,
+            width: 50,
           ),
           Gap(10)
         ],
@@ -84,28 +84,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextContent(
-                        name: "Hello.",
-                        fcolor: Colors.white,
-                        fontsize: 33,
-                        fontweight: FontWeight.bold,
-                      ),
+                      // const Spacer(),
                       TextContent(
                         name: "Welcome back! Kindly enter your",
                         fcolor: Colors.white,
+                        fontsize: 16,
                       ),
                       TextContent(name: "login details. ", fcolor: Colors.white),
                       const Gap(40),
                       TextContent(name: "Email", fcolor: Colors.white),
                       const Gap(5),
-                      Tfields(
+                      LoginTfields(
                         field_controller: emailcon,
                         suffixicon: Icons.mail_outline,
                       ),
                       const Gap(20),
                       TextContent(name: "Password", fcolor: Colors.white),
                       const Gap(5),
-                      Password_Tfields(
+                      LoginPassTfields(
                         field_controller: passcon, 
                         showpassIcon: Icons.visibility,
                         hidepassIcon: Icons.visibility_off,
@@ -114,19 +110,30 @@ class _LoginScreenState extends State<LoginScreen> {
                       const Gap(10),
                       Align(
                         alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {},
-                          child: const Text(
-                            'Forgot User Password?',
-                            style: TextStyle(color: Colors.white),
-                          ),
+                        child: Column(
+                          children: [
+                            TextButton(
+                              onPressed: () {},
+                              child: const Text(
+                                'Forgot User Password?',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(builder: (_)=>SignUpScreen()));
+                              },
+                              child: TextContent(name: 'Dont have an account?', fcolor: const Color.fromARGB(255, 117, 190, 250),)
+                            ),
+                          ],
                         ),
                       ),
+                      const Spacer()
                     ],
                   ),
                 ),
                 Container(
-                  height: screenHeight * 0.4,
+                  height: screenHeight * 0.35,
                   width: screenWidth,
                   color: Colors.white,
                   child: Padding(
@@ -135,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       alignment: Alignment.bottomCenter,
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 90),
-                        child: EButtons(onPressed: checklogin, name: "Log In", tcolor: Colors.white, bcolor: Colors.green,),
+                        child: EButtons(onPressed: checklogin, name: "Log In", tcolor: Colors.white, bcolor: Colors.redAccent, elevation: 15,),
                       ),
                     ),
                   ),

@@ -37,13 +37,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.red,
           title: TextContent(
             name: 'Profile',
-            fcolor: Colors.red,
+            fcolor: Colors.white,
           ),
           centerTitle: true,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.red),
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.yellow),
             onPressed: () => Navigator.of(context).pop(),
           ),
           // actions: [

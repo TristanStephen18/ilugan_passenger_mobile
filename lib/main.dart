@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ilugan_passenger_mobile_app/otp_trial/sendotp.dart';
 import 'package:ilugan_passenger_mobile_app/screens/authentication/emailverification.dart';
+import 'package:ilugan_passenger_mobile_app/screens/index/landingscreen2.dart';
+import 'package:ilugan_passenger_mobile_app/screens/userscreens/busschedules.dart';
 import 'package:ilugan_passenger_mobile_app/screens/userscreens/homescreen.dart';
 import 'package:ilugan_passenger_mobile_app/screens/authentication/signupscreen.dart';
 import 'package:ilugan_passenger_mobile_app/screens/userscreens/profile.dart';

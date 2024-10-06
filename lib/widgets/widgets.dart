@@ -5,14 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ilugan_passenger_mobile_app/screens/userscreens/busschedules.dart';
 import 'package:ilugan_passenger_mobile_app/screens/userscreens/profile.dart';
 
 class Buttons extends StatelessWidget {
-  Buttons({
-    super.key,
-    required this.onPressed,
-    required this.name
-  });
+  Buttons({super.key, required this.onPressed, required this.name});
 
   final VoidCallback onPressed;
   String name = "";
@@ -20,73 +17,66 @@ class Buttons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: onPressed, 
+      onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        fixedSize: Size(MediaQuery.sizeOf(context).width - 100, 60),
-        backgroundColor: Colors.white,  
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10)
-        ),
-        shadowColor: Colors.black,
-        elevation: 9
-      ),
+          fixedSize: Size(MediaQuery.sizeOf(context).width - 100, 60),
+          backgroundColor: Colors.white,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shadowColor: Colors.black,
+          elevation: 9),
       child: TextContent(
-        name: name,
-        fontsize: 20,
-        fontweight: FontWeight.bold,
-        fcolor: const Color.fromARGB(255, 65, 26, 23)
-        ),
-      
-      );
+          name: name,
+          fontsize: 20,
+          fontweight: FontWeight.bold,
+          fcolor: const Color.fromARGB(255, 65, 26, 23)),
+    );
   }
 }
 
 class EButtons extends StatelessWidget {
-  EButtons({
-    super.key,
-    required this.onPressed,
-    required this.name,
-    this.bcolor,
-    this.tcolor
-  });
+  EButtons(
+      {super.key,
+      required this.onPressed,
+      required this.name,
+      this.bcolor,
+      this.tcolor,
+      this.elevation,
+      });
 
   final VoidCallback onPressed;
   String name = "";
   Color? bcolor;
   Color? tcolor;
+  double? elevation;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: onPressed, 
+      onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        fixedSize: Size(MediaQuery.sizeOf(context).width - 150, 60),
-        backgroundColor: bcolor,  
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10)
-        ),
-        shadowColor: Colors.black,
-        elevation: 9
-      ),
+          fixedSize: Size(MediaQuery.sizeOf(context).width - 150, 60),
+          backgroundColor: bcolor,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shadowColor: Colors.black,
+          elevation: elevation),
       child: TextContent(
-        name: name,
-        fontsize: 20,
-        fontweight: FontWeight.bold,
-        fcolor: tcolor
-        ),
-      
-      );
+          name: name,
+          fontsize: 20,
+          fontweight: FontWeight.bold,
+          fcolor: tcolor),
+    );
   }
 }
 
 class TextContent extends StatelessWidget {
-  TextContent({
-    super.key,
-    required this.name,
-    this.fontsize,
-    this.fontweight,
-    this.fcolor
-  });
+  TextContent(
+      {super.key,
+      required this.name,
+      this.fontsize,
+      this.fontweight,
+      this.fcolor});
 
   final String name;
   double? fontsize = 0;
@@ -97,51 +87,50 @@ class TextContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       name,
-      style: GoogleFonts.inter(
+      style: GoogleFonts.firaSans(
         fontSize: fontsize,
         fontWeight: fontweight,
         color: fcolor,
       ),
-      );
+    );
   }
 }
 
 class Tfields extends StatelessWidget {
-  Tfields({
-    super.key,
-    required this.field_controller,
-    this.suffixicon,
-    this.label,
-    this.prefix
-    });
+  Tfields(
+      {super.key,
+      required this.field_controller,
+      this.suffixicon,
+      this.label,
+      this.prefix});
 
-    var field_controller = TextEditingController();
-    IconData? suffixicon;
-    String? label= "";
-    Widget? prefix;
-
+  var field_controller = TextEditingController();
+  IconData? suffixicon;
+  String? label = "";
+  Widget? prefix;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: field_controller,
       validator: (value) {
-          if(value == null || value.isEmpty){
-            return 'Please fill up this field';
-            }
-            return null;
-          },
-      style: const TextStyle(
-        color: Colors.black
-      ),
+        if (value == null || value.isEmpty) {
+          return 'Please fill up this field';
+        }
+        return null;
+      },
+      style: const TextStyle(color: Colors.black),
       decoration: InputDecoration(
         prefix: prefix,
         fillColor: Colors.transparent,
         filled: true,
-        suffixIcon: Icon(suffixicon, color: Colors.black,),
-         enabledBorder: const UnderlineInputBorder(
+        suffixIcon: Icon(
+          suffixicon,
+          color: Colors.black,
+        ),
+        enabledBorder: const UnderlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.black, 
+            color: Colors.black,
             width: 1.0,
           ),
         ),
@@ -151,10 +140,9 @@ class Tfields extends StatelessWidget {
             width: 2.0,
           ),
         ),
-      
         errorBorder: const UnderlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.black, 
+            color: Colors.black,
             width: 1.0,
           ),
         ),
@@ -163,20 +151,76 @@ class Tfields extends StatelessWidget {
   }
 }
 
+class LoginTfields extends StatelessWidget {
+  LoginTfields(
+      {super.key,
+      required this.field_controller,
+      this.suffixicon,
+      this.label,
+      this.prefix,});
+
+  var field_controller = TextEditingController();
+  IconData? suffixicon;
+  String? label = "";
+  Widget? prefix;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: field_controller,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please fill up this field';
+        }
+        return null;
+      },
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        prefix: prefix,
+        fillColor: Colors.transparent,
+        filled: true,
+        suffixIcon: Icon(
+          suffixicon,
+          color: Colors.white,
+        ),
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.white,
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.white,
+            width: 2.0,
+          ),
+        ),
+        errorBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.yellow,
+            width: 1.0,
+          ),
+        ),
+        errorStyle: const TextStyle(
+          color: Colors.yellow
+        )
+      ),
+    );
+  }
+}
+
 class PTfields extends StatelessWidget {
-  PTfields({
-    super.key,
-    required this.field_controller,
-    this.suffixicon,
-    this.label,
-    this.prefix
-    });
+  PTfields(
+      {super.key,
+      required this.field_controller,
+      this.suffixicon,
+      this.label,
+      this.prefix});
 
-    var field_controller = TextEditingController();
-    IconData? suffixicon;
-    String? label= "";
-    Widget? prefix;
-
+  var field_controller = TextEditingController();
+  IconData? suffixicon;
+  String? label = "";
+  Widget? prefix;
 
   @override
   Widget build(BuildContext context) {
@@ -188,22 +232,23 @@ class PTfields extends StatelessWidget {
       keyboardType: TextInputType.number,
       controller: field_controller,
       validator: (value) {
-          if(value == null || value.isEmpty){
-            return 'Please fill up this field';
-            }
-            return null;
-          },
-      style: const TextStyle(
-        color: Colors.black
-      ),
+        if (value == null || value.isEmpty) {
+          return 'Please fill up this field';
+        }
+        return null;
+      },
+      style: const TextStyle(color: Colors.black),
       decoration: InputDecoration(
         prefix: prefix,
         fillColor: Colors.transparent,
         filled: true,
-        suffixIcon: Icon(suffixicon, color: Colors.black,),
-         enabledBorder: const UnderlineInputBorder(
+        suffixIcon: Icon(
+          suffixicon,
+          color: Colors.black,
+        ),
+        enabledBorder: const UnderlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.black, 
+            color: Colors.black,
             width: 1.0,
           ),
         ),
@@ -213,10 +258,9 @@ class PTfields extends StatelessWidget {
             width: 2.0,
           ),
         ),
-      
         errorBorder: const UnderlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.red, 
+            color: Colors.red,
             width: 1.0,
           ),
         ),
@@ -229,48 +273,51 @@ class Password_Tfields extends StatefulWidget {
   Password_Tfields({
     super.key,
     required this.field_controller,
-    required this.showpassIcon,    
-    required this.hidepassIcon, 
+    required this.showpassIcon,
+    required this.hidepassIcon,
     required this.showpass,
     // required this.togglepass
-    });
+  });
 
-    var field_controller = TextEditingController();
-    IconData? showpassIcon;
-    IconData?  hidepassIcon;
-    bool showpass;
+  var field_controller = TextEditingController();
+  IconData? showpassIcon;
+  IconData? hidepassIcon;
+  bool showpass;
 
   @override
   State<Password_Tfields> createState() => _Password_TfieldsState();
 }
 
 class _Password_TfieldsState extends State<Password_Tfields> {
-    // final VoidCallback togglepass;
+  // final VoidCallback togglepass;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: widget.field_controller,
-    validator: (value) {
-        if(value == null || value.isEmpty){
+      validator: (value) {
+        if (value == null || value.isEmpty) {
           return 'Please fill up this field';
-          }
-          return null;
+        }
+        return null;
       },
       obscureText: widget.showpass,
-      style: const TextStyle(
-        color: Colors.black
-      ),
+      style: const TextStyle(color: Colors.black),
       decoration: InputDecoration(
         fillColor: Colors.transparent,
         filled: true,
-        suffixIcon: IconButton(onPressed: (){
-          setState(() {
-            widget.showpass = !widget.showpass;
-          });
-        }, icon:Icon( widget.showpass ? widget.hidepassIcon : widget.showpassIcon, color: Colors.black,)),
-         enabledBorder: const UnderlineInputBorder(
+        suffixIcon: IconButton(
+            onPressed: () {
+              setState(() {
+                widget.showpass = !widget.showpass;
+              });
+            },
+            icon: Icon(
+              widget.showpass ? widget.hidepassIcon : widget.showpassIcon,
+              color: Colors.black,
+            )),
+        enabledBorder: const UnderlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.black, 
+            color: Colors.black,
             width: 1.0,
           ),
         ),
@@ -280,10 +327,9 @@ class _Password_TfieldsState extends State<Password_Tfields> {
             width: 2.0,
           ),
         ),
-      
         errorBorder: const UnderlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.red, 
+            color: Colors.red,
             width: 1.0,
           ),
         ),
@@ -292,8 +338,83 @@ class _Password_TfieldsState extends State<Password_Tfields> {
   }
 }
 
+class LoginPassTfields extends StatefulWidget {
+  LoginPassTfields({
+    super.key,
+    required this.field_controller,
+    required this.showpassIcon,
+    required this.hidepassIcon,
+    required this.showpass,
+  });
+
+  var field_controller = TextEditingController();
+  IconData? showpassIcon;
+  IconData? hidepassIcon;
+  bool showpass;
+
+  @override
+  State<LoginPassTfields> createState() => _LoginPassTfieldsState();
+}
+
+class _LoginPassTfieldsState extends State<LoginPassTfields> {
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: widget.field_controller,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please fill up this field';
+        }
+        return null;
+      },
+      obscureText: widget.showpass,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        fillColor: Colors.transparent,
+        filled: true,
+        suffixIcon: IconButton(
+            onPressed: () {
+              setState(() {
+                widget.showpass = !widget.showpass;
+              });
+            },
+            icon: Icon(
+              widget.showpass ? widget.hidepassIcon : widget.showpassIcon,
+              color: Colors.white,
+            )),
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.white,
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.white,
+            width: 2.0,
+          ),
+        ),
+        errorBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.yellow,
+            width: 1.0,
+          ),
+        ),
+        errorStyle: const TextStyle(
+          color: Colors.yellow
+        )
+      ),
+      
+    );
+  }
+}
+
 class AppDrawer extends StatefulWidget {
-  AppDrawer({super.key, required this.username, required this.email, required this.logoutfunc});
+  AppDrawer(
+      {super.key,
+      required this.username,
+      required this.email,
+      required this.logoutfunc});
 
   String username;
   String email;
@@ -314,26 +435,32 @@ class _AppDrawerState extends State<AppDrawer> {
               padding: EdgeInsets.zero,
               children: [
                 DrawerHeader(
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                  ),
-                  child: Row(
-                    children: [
-                      const CircleAvatar(
-                        radius: 30,
-                        backgroundImage: AssetImage('assets/icons/pfp_sample.jpg'),
-                      ),
-                      const Gap(10),
-                      Column(
-                        children: [
-                          const Gap(43),
-                          TextContent(name: widget.username.toString(), fontweight: FontWeight.bold,),
-                          TextContent(name: widget.email.toString(), fontsize: 12,)
-                        ],
-                      )
-                    ],
-                  )
-                ),
+                    decoration: const BoxDecoration(
+                      color: Colors.redAccent,
+                    ),
+                    child: Row(
+                      children: [
+                        const CircleAvatar(
+                          radius: 30,
+                          backgroundImage:
+                              AssetImage('assets/icons/profile.png'),
+                        ),
+                        const Gap(10),
+                        Column(
+                          children: [
+                            const Gap(43),
+                            TextContent(
+                              name: widget.username.toString(),
+                              fontweight: FontWeight.bold,
+                            ),
+                            TextContent(
+                              name: widget.email.toString(),
+                              fontsize: 12,
+                            )
+                          ],
+                        )
+                      ],
+                    )),
                 ListTile(
                   title: TextContent(
                     name: 'Bus Schedules',
@@ -344,9 +471,12 @@ class _AppDrawerState extends State<AppDrawer> {
                     color: Colors.red,
                   ),
                   hoverColor: Colors.red,
+                  onTap: (){
+                    Navigator.of(context).push(MaterialPageRoute(builder: (_)=> BusSchedulesScreen()));
+                  },
                 ),
                 const Divider(),
-                 ListTile(
+                ListTile(
                   title: TextContent(
                     name: 'Passenger Profile',
                     fcolor: const Color.fromARGB(255, 104, 103, 103),
@@ -355,8 +485,9 @@ class _AppDrawerState extends State<AppDrawer> {
                     Icons.person,
                     color: Colors.red,
                   ),
-                  onTap: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_)=>const ProfileScreen()));
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => const ProfileScreen()));
                   },
                   hoverColor: Colors.green,
                 ),
@@ -406,29 +537,27 @@ class _AppDrawerState extends State<AppDrawer> {
 }
 
 class ProfileTfields extends StatefulWidget {
-  ProfileTfields({
-    super.key,
-    // required this.field_controller,
-    this.suffixicon,
-    this.label,
-    this.prefix,
-    this.data,
-    this.isreadable
-    });
+  ProfileTfields(
+      {super.key,
+      // required this.field_controller,
+      this.suffixicon,
+      this.label,
+      this.prefix,
+      this.data,
+      this.isreadable});
 
-    // var field_controller = TextEditingController();
-    IconData? suffixicon;
-    String? label= "";
-    Widget? prefix;
-    String? data;
-    bool? isreadable;
+  // var field_controller = TextEditingController();
+  IconData? suffixicon;
+  String? label = "";
+  Widget? prefix;
+  String? data;
+  bool? isreadable;
 
   @override
   State<ProfileTfields> createState() => _ProfileTfieldsState();
 }
 
 class _ProfileTfieldsState extends State<ProfileTfields> {
-
   bool togglereadonly = true;
 
   @override
@@ -436,30 +565,34 @@ class _ProfileTfieldsState extends State<ProfileTfields> {
     return TextFormField(
       textAlign: TextAlign.center,
       readOnly: togglereadonly,
-      style: const TextStyle(
-        color: Color.fromRGBO(0, 0, 0, 1)
-      ),
+      style: const TextStyle(color: Color.fromRGBO(0, 0, 0, 1)),
       validator: (value) {
-        if(value == null || value.isEmpty){
+        if (value == null || value.isEmpty) {
           return 'Please fill up this field';
-          }
-          return null;
+        }
+        return null;
       },
       initialValue: widget.data,
       decoration: InputDecoration(
-        prefix: widget.prefix,
-        fillColor: Colors.transparent,
-        filled: true,
-        suffixIcon: IconButton(onPressed: (){
-          setState(() {
-            togglereadonly = !togglereadonly;
-          });
-        }, icon: Icon(widget.suffixicon, color: Colors.black,),),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(40) 
-        ),
-        label: TextContent(name: '${widget.label}', fcolor: Colors.black,)
-      ),
+          prefix: widget.prefix,
+          fillColor: Colors.transparent,
+          filled: true,
+          suffixIcon: IconButton(
+            onPressed: () {
+              setState(() {
+                togglereadonly = !togglereadonly;
+              });
+            },
+            icon: Icon(
+              widget.suffixicon,
+              color: Colors.black,
+            ),
+          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(40)),
+          label: TextContent(
+            name: '${widget.label}',
+            fcolor: Colors.black,
+          )),
     );
   }
 }
@@ -473,4 +606,3 @@ class BusDetails extends StatelessWidget {
     // return ScaffoldMessenger();
   }
 }
-
