@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:google_fonts/google_fonts.dart';
+// import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ilugan_passenger_mobile_app/screens/reservation/reservation.dart';
+// import 'package:ilugan_passenger_mobile_app/screens/reservation/reservation.dart';
+import 'package:ilugan_passenger_mobile_app/screens/reservation/selectdestination.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 import 'package:status_alert/status_alert.dart';
 
@@ -195,7 +196,7 @@ class DisplayItems {
             OutlinedButton(
                 onPressed: () {
                   if (availableseats == 0) {
-                    print("you can't reserve a seat when the bus is full");
+                    // print("you can't reserve a seat when the bus is full");
                     StatusAlert.show(
                       context,
                       title: 'Bus is fully occupied',
@@ -227,20 +228,20 @@ class DisplayItems {
                     //   duration: const Duration(seconds: 1),
                     // );
                     // Navigator.of(context).pop();
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_)=>SeatRservationScreen(companyId: companyId, companyname: buscompany, busnum: platenumber, mylocation: currentloc,)));
+                    Navigator.of(context).push(MaterialPageRoute(builder: (_)=>SelectLocationScreen(companyId: companyId, compName: buscompany, busnum: platenumber, currentloc: currentloc,)));
                   }
                 },
                 style: OutlinedButton.styleFrom(
                   backgroundColor:
-                      availableseats == 0 ? Colors.red : Colors.green,
+                      availableseats == 0 ? Colors.redAccent : Colors.blueAccent,
                   foregroundColor:
                       availableseats == 0 ? Colors.white : Colors.white,
                   fixedSize: Size(MediaQuery.sizeOf(context).width, 50),
                 ),
                 child: TextContent(
                     name: availableseats == 0
-                        ? 'Standing/Full'
-                        : 'Reserve a seat'))
+                        ? 'STANDING/FULLY OCCUPIED'
+                        : 'RESERVE A SEAT', fcolor: Colors.black, fontsize: 20,))
           ],
         ),
       ),
@@ -248,13 +249,15 @@ class DisplayItems {
   }
 }
 
-class UserDataGetter{
-  String getusername(){
-    String username = "";
-    User? user = FirebaseAuth.instance.currentUser;
+
+
+// class UserDataGetter{
+//   String getusername(){
+//     String username = "";
+//     User? user = FirebaseAuth.instance.currentUser;
 
     
 
-    return username;
-  }
-}
+//     return username;
+//   }
+// }

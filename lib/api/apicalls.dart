@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
-String apiKeyDistance = 'e3NCLlL8P5m5Q3i5vCiFCaHLaoZdMEN1qJ1IK83FxzaBOAYmi8l5dHJXp0qyHzFc';
+String apiKeyDistance = 'plpzSXk6wsl0A0OsQxHT4VUJLvCQUHaOaYRuqsieIdc5pswMo6aIeSm5r6eHyynp';
 
 class ApiCalls {
-  Future<String> reverseGeocode(double lat, double lon) async {
+  Future<String> reverseGeocode(double lat, double lon) async { 
   const String apiKey = "pk.e6e28e751bd0e401a2a07cb0cbe2e6e4";
   final String url =
       "https://us1.locationiq.com/v1/reverse.php?key=$apiKey&lat=$lat&lon=$lon&format=json";
@@ -24,6 +24,8 @@ class ApiCalls {
     return "Address not available";
   }
 }
+
+
 
  Future<LatLng?> getCoordinates(String address) async {
   const String apiKey = "pk.e6e28e751bd0e401a2a07cb0cbe2e6e4";

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:ilugan_passenger_mobile_app/screens/index/landingscreen2.dart';
 import 'package:ilugan_passenger_mobile_app/screens/userscreens/homescreen.dart';
 // import 'package:gap/gap.dart';
-import 'package:ilugan_passenger_mobile_app/screens/index/landingscreen.dart';
+// import 'package:ilugan_passenger_mobile_app/screens/index/landingscreen.dart';
 // import 'package:lottie/lottie.dart';
 
 class SplashScreen extends StatelessWidget {

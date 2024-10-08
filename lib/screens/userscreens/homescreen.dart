@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ilugan_passenger_mobile_app/api/apicalls.dart';
-import 'package:ilugan_passenger_mobile_app/screens/authentication/loginscreen.dart';
+// import 'package:ilugan_passenger_mobile_app/screens/authentication/loginscreen.dart';
 import 'package:ilugan_passenger_mobile_app/screens/index/landingscreen2.dart';
 import 'package:ilugan_passenger_mobile_app/screens/userscreens/notification.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/classes.dart';
@@ -24,7 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     getemailandusername();
     getCurrentLocation();
-    // listenToBusUpdates();
     customIconforMovingBuses();
     fetchBusesForCompany();
   }
@@ -47,6 +46,12 @@ class _HomeScreenState extends State<HomeScreen> {
       var busData = busDoc.data() as Map<String, dynamic>;
 
       String busNumber = busData['bus_number'] ?? '';
+      
+      // Skip the bus with number 'BUS 1231'
+      if (busNumber == 'BUS 1231') {
+        continue; // Skip this iteration
+      }
+
       String plateNumber = busData['plate_number'] ?? '';
       int availableSeats = busData['available_seats'] ?? 0;
       int occupiedSeats = busData['occupied_seats'] ?? 0;
@@ -69,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () {
               DisplayItems().showbusinfo(
                   context,
-                  'Company Name', // You may add company name if needed
+                  'Dagupan Bus Inc.', // You may add company name if needed
                   busNumber,
                   plateNumber,
                   address,
@@ -89,6 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
     print('Error fetching buses: $e');
   });
 }
+
 
 
   bool hasreservation = false;
@@ -119,64 +125,13 @@ class _HomeScreenState extends State<HomeScreen> {
   });
 }
 
-  void listenToBusUpdates() {
-    print('Executed');
-    FirebaseFirestore.instance
-        .collection('companies')
-        .snapshots()
-        .listen((companySnapshot) {
-      for (var companyDoc in companySnapshot.docs) {
-        String companyId = companyDoc.id;
-
-        FirebaseFirestore.instance
-            .collection('companies')
-            .doc(companyId)
-            .collection('buses')
-            .snapshots()
-            .listen((busSnapshot) {
-          markers.removeWhere(
-              (marker) => marker.markerId.value != 'user_location');
-
-          for (var busDoc in busSnapshot.docs) {
-            var busData = busDoc.data() as Map<String, dynamic>;
-
-            String busNumber = busData['bus_number'] ?? '';
-            String plateNumber = busData['plate_number'] ?? '';
-            int availableSeats = busData['available_seats'] ?? 0;
-            GeoPoint geoPoint = busData['current_location'] ?? GeoPoint(0, 0);
-
-            LatLng currentLocation =
-                LatLng(geoPoint.latitude, geoPoint.longitude);
-            print('Bus data: $busData');
-            print(
-                'Adding marker for bus: $busNumber at location: ${currentLocation.latitude}}');
-
-            setState(() {
-              markers.add(
-                Marker(
-                  markerId: MarkerId(busNumber),
-                  position: currentLocation,
-                  infoWindow: InfoWindow(
-                    title: 'Bus: $busNumber',
-                    snippet: 'Available seats: $availableSeats',
-                  ),
-                  icon: BitmapDescriptor.defaultMarker,
-                ),
-              );
-            });
-          }
-        });
-      }
-    });
-  }
-
   BitmapDescriptor busmarkers = BitmapDescriptor.defaultMarker;
 
   void customIconforMovingBuses() {
     BitmapDescriptor.fromAssetImage(
       const ImageConfiguration(
         size: Size(2, 2), // Reduce the size here
-        devicePixelRatio: 2.5, // Adjust for better scaling
+        devicePixelRatio: 1, // Adjust for better scaling
       ),
       "assets/icons/moving_bus_icon.png",
     ).then((icon) {
@@ -332,20 +287,8 @@ class _HomeScreenState extends State<HomeScreen> {
             markers: markers,
           ),
         ),
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.only(bottom: 20.0),
-          child: Visibility(
-            visible: hasreservation,
-              child: SizedBox(
-                height: 100,
-                width:  100,
-                  child: FloatingActionButton(
-            onPressed: showQr,
-            child: const Icon(Icons.qr_code, size: 90,),
-          ))),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      ),
+        
+       ),
     );
   }
 }

@@ -2,41 +2,46 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ilugan_passenger_mobile_app/api/apicalls.dart';
-import 'package:ilugan_passenger_mobile_app/screens/userscreens/homescreen.dart';
 import 'package:ilugan_passenger_mobile_app/screens/reservation/widgets.dart';
+import 'package:ilugan_passenger_mobile_app/screens/userscreens/homescreen.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
+import 'package:quickalert/quickalert.dart';
 import 'package:status_alert/status_alert.dart';
 
-class SeatRservationScreen extends StatefulWidget {
-  SeatRservationScreen(
+class SeatReservationScreen extends StatefulWidget {
+  SeatReservationScreen(
       {super.key,
       required this.companyId,
       required this.companyname,
       required this.busnum,
-      required this.mylocation});
+      required this.mylocation,
+      required this.destination,
+      required this.destinationcoordinates});
 
   String companyId;
   String companyname;
   String busnum;
   LatLng mylocation;
+  LatLng destinationcoordinates;
+  String destination;
 
   @override
-  State<SeatRservationScreen> createState() => _SeatRservationScreenState();
+  State<SeatReservationScreen> createState() => _SeatReservationScreenState();
 }
 
-class _SeatRservationScreenState extends State<SeatRservationScreen> {
+class _SeatReservationScreenState extends State<SeatReservationScreen> {
   @override
   void initState() {
     super.initState();
-    print(widget.companyId + widget.companyname + widget.busnum);
     setfields();
     getBusData();
+    getDistance();
+    // getAmount();
   }
 
   void setfields() async {
@@ -45,72 +50,57 @@ class _SeatRservationScreenState extends State<SeatRservationScreen> {
     setState(() {});
   }
 
-  void getdistance() async {
-    distance = await ApiCalls().getDistance(
-        LatLng(widget.mylocation.latitude, widget.mylocation.longitude),
-        coordinates);
-    getamount();
-    setState(() {});
-  }
-
-  List<String> cities = [
-    'Dagupan City',
-    'Calasiao',
-    'Santa Barbara',
-    'Urdaneta City',
-    'Paniqui',
-    'Gerona',
-    'Tarlac City',
-    'Dau',
-    'Quezon City'
-  ];
-
   Future<void> updateDocument() async {
     await FirebaseFirestore.instance
-        .collection('passengers') // Specify the collection
-        .doc(FirebaseAuth.instance.currentUser?.uid) // Specify the document ID
+        .collection('passengers')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
         .update({
-      'hasreservation': true, // Field you want to update
-    }).then((_) {
-      print('Document successfully updated!');
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (_) => const HomeScreen()));
+      'hasreservation': true,
+    }).then((_) async {
+      print("update Successful");
+      await FirebaseFirestore.instance.collection('passengers').doc(FirebaseAuth.instance.currentUser?.uid).collection('reservations').doc(presID).set({
+        "reservation_number" : presID,
+        "date_and_time" : current,
+        "from" : currentlocc,
+        "to" : widget.destination,
+        "fare" : double.parse(amount.toString()),
+        "distance_traveled" : distance,
+        "busnumber": widget.busnum,
+        "bus_company" : widget.companyname
+      }).then((value){
+        print("Reservation Successful");
+        QuickAlert.show(context: context, 
+        type: QuickAlertType.success,
+        title: "Reservation Successful",
+        showConfirmBtn: true,
+        onConfirmBtnTap: (){
+          Navigator.of(context).push(MaterialPageRoute(builder: (_)=>const HomeScreen()));
+        }
+        );
+      }).catchError((error){
+        print(error.toString());
+      });
     }).catchError((error) {
       print('Failed to update document: $error');
     });
   }
 
-  Future<void> updatebusdata (int avail, int occu, int res)async{
-    await FirebaseFirestore.instance.collection('companies').doc(widget.companyId).collection('buses').doc(widget.busnum).update({
-      'available_seats' : avail - int.parse(seatscon.text),
-      'occupied_seats' : occu + int.parse(seatscon.text),
-      'reserved_seats' : res + int.parse(seatscon.text)
+  Future<void> updateBusData(int avail, int occu, int res) async {
+    await FirebaseFirestore.instance
+        .collection('companies')
+        .doc(widget.companyId)
+        .collection('buses')
+        .doc(widget.busnum)
+        .update({
+      'available_seats': avail - 1,
+      'occupied_seats': occu + 1,
+      'reserved_seats': res + 1
     }).then((value) {
       print('Bus Data Updated');
-    }).catchError((error){
-      print('Error updated the bus data');
+    }).catchError((error) {
+      print('Error updating the bus data');
     });
   }
-
-  String? selectedCity;
-  LatLng coordinates = const LatLng(120.09093123, 129.10319823798);
-  var currentloccon = TextEditingController();
-  String currentlocc = "";
-  var discon = TextEditingController();
-  var amountcon = TextEditingController();
-  var seatscon = TextEditingController();
-  DateTime current = DateTime.now();
-  String? distance = "...";
-  String amount = "...";
-
-  void getcoordinates(String? address) async {
-    coordinates = await ApiCalls().getCoordinates(address.toString()) as LatLng;
-    print(coordinates);
-    setState(() {});
-  }
-
-  int occ = 0;
-  int reserved = 0;
 
   void getBusData() {
     FirebaseFirestore.instance
@@ -122,14 +112,13 @@ class _SeatRservationScreenState extends State<SeatRservationScreen> {
         .listen((DocumentSnapshot<Map<String, dynamic>> snapshot) {
       if (snapshot.exists) {
         var data = snapshot.data() as Map<String, dynamic>;
-        print(data['available_seats']);
         setState(() {
           seatsavail = data['available_seats'];
           occ = data['occupied_seats'];
           reserved = data['reserved_seats'];
         });
       } else {
-        print('unable to find data');
+        print('Unable to find data');
       }
     });
   }
@@ -144,205 +133,337 @@ class _SeatRservationScreenState extends State<SeatRservationScreen> {
         .get();
 
     if (snapshots.docs.isEmpty) {
+      setState(() {
+        presID = "000001";
+      });
       await FirebaseFirestore.instance
           .collection('companies')
           .doc(widget.companyId)
           .collection('buses')
           .doc(widget.busnum)
           .collection('reservations')
-          .doc('1')
+          .doc('000001')
           .set({
         'passengerId': FirebaseAuth.instance.currentUser!.uid,
-        'amount': double.parse(amount),
+        'amount': double.parse(amount.toString()),
         'distance': distance,
         'from': currentlocc,
-        'to': selectedCity,
+        'to': widget.destination,
         'date_time': current,
-        'seats_reserved': int.parse(seatscon.text),
+        'seats_reserved': 1,
         'accomplished': false
       }).then((value) {
-        print('Reserved');
-        updatebusdata(seatsavail, occ, reserved);
+        updateBusData(seatsavail, occ, reserved);
         updateDocument();
-        Navigator.of(context).pop();
+        // Navigator.of(context).pop();
       }).catchError((error) {
-        print('error');
+        print('Error');
       });
     } else {
-      int entries = snapshots.docs.length;
-      entries = entries + 1;
+      int entries = snapshots.docs.length + 1;
+      String reservationNumber = entries.toString().padLeft(6, '0');
+      setState(() {
+        presID = reservationNumber;
+      });
       await FirebaseFirestore.instance
           .collection('companies')
           .doc(widget.companyId)
           .collection('buses')
           .doc(widget.busnum)
           .collection('reservations')
-          .doc(entries.toString())
+          .doc(reservationNumber)
           .set({
         'passengerId': FirebaseAuth.instance.currentUser!.uid,
-        'amount': double.parse(amount),
+        'amount': double.parse(amount.toString()),
         'distance': distance,
         'from': currentlocc,
-        'to': selectedCity,
+        'to': widget.destination,
         'date_time': current,
-        'seats_reserved': int.parse(seatscon.text),
+        'seats_reserved': 1,
         'accomplished': false
       }).then((value) {
-        print('Reserved + 1');
-        updatebusdata(seatsavail, occ, reserved);
+        updateBusData(seatsavail, occ, reserved);
         updateDocument();
-        Navigator.of(context).pop();
+        // Navigator.of(context).pop();
       }).catchError((error) {
         print(error);
       });
     }
   }
 
-  void getamount() {
-    if (distance == '...' || distance == null) {
-      return;
-    } else {
-      List<String> km = distance.toString().split(' ');
-      double val = double.parse(km[0]);
-      amount = (val * 1.25).toString();
-      setState(() {});
-    }
+  String? selectedCity;
+  LatLng coordinates = const LatLng(120.09093123, 129.10319823798);
+  var currentloccon = TextEditingController();
+  String currentlocc = "";
+  var seatscon = TextEditingController();
+  DateTime current = DateTime.now();
+  String? distance;
+  String? amount;
+  int occ = 0;
+  int reserved = 0;
+  double? original;
+  String? presID;
+
+  double containerheightcalculator(String content) {
+    // Define base height and scaling factors
+    double baseHeight = 27; // Minimum height
+    double charHeightFactor =
+        1.5; // Height increment per character (adjust as needed)
+    int maxCharsInLine =
+        20; // Approximate number of characters that fit in one line
+
+    // Calculate how many lines the content would take
+    int lines = (content.length / maxCharsInLine).ceil();
+
+    // Calculate the height based on number of lines
+    double height = baseHeight + (lines * charHeightFactor * 7);
+
+    // Ensure a minimum height is set
+    return height;
+  }
+
+  void getDistance() async {
+    String? response = await ApiCalls()
+        .getDistance(widget.mylocation, widget.destinationcoordinates);
+
+    setState(() {
+      distance = response;
+    });
+
+    getAmount(response.toString());
   }
 
   int seatsavail = 0;
 
+  void getAmount(String distance) {
+    List<String> km = distance.toString().split(' ');
+    double val = double.parse(km[0]);
+    amount = (val * 2.25).toStringAsFixed(2);
+    original = double.parse(amount.toString());
+    setState(() {});
+  }
+
+  void amountCalculator(String type){
+
+    // double original = double.parse(amount.toString());
+    if(type == "Regular"){
+      setState(() {
+        amount = original.toString();
+      });
+    }else{
+      setState(() {
+        amount = (double.parse(amount.toString()) * 0.80).toString();
+      });
+    }
+  }
+
+  String selectedCategory = 'Regular'; // Default value
+
+  // List of categories
+  final List<String> categories = [
+    'Regular',
+    'Student',
+    'Senior Citizen',
+    'PWD'
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Container(
-          height: MediaQuery.sizeOf(context).height - 100,
-          width: MediaQuery.sizeOf(context).width - 50,
-          // color: Colors.green,
-          decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(15)),
-              color: Colors.green),
-
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  TextContent(
-                    name: 'Reservation Details',
-                    fontsize: 20,
-                    fontweight: FontWeight.bold,
-                    fcolor: Colors.white,
-                  ),
-                  const Gap(1),
-                  TextContent(
-                    name: widget.companyname,
-                    fontsize: 18,
-                    fontweight: FontWeight.w700,
-                    fcolor: Colors.white,
-                  ),
-                  const Divider(
-                    color: Colors.white,
-                  ),
-                  const Image(
-                    image: AssetImage('assets/icons/dagupan_bus.png'),
-                    height: 100,
-                  ),
-                  const Gap(10),
-                  TextContent(
-                    name: 'Bus Number: ${widget.busnum}',
-                    fcolor: Colors.white,
-                    fontsize: 20,
-                    fontweight: FontWeight.bold,
-                  ),
-                  TextContent(
-                    name: 'Date: $current',
-                    fcolor: Colors.white,
-                  ),
-                  TextContent(
-                    name: 'Available Seats: $seatsavail',
-                    fcolor: Colors.white,
-                    fontsize: 20,
-                  ),
-                  const Gap(20),
-                  TextContent(
-                    name: 'From: $currentlocc',
-                    fcolor: Colors.white,
-                    fontsize: 15,
-                    fontweight: FontWeight.bold,
-                  ),
-                  const Gap(8),
-                  const Gap(10),
-                  Row(
-                    children: [
-                      TextContent(
-                        name: 'To: ',
-                        fcolor: Colors.white,
+      appBar: AppBar(
+        title: TextContent(name: 'Reservation', fcolor: Colors.black),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.yellow),
+          onPressed: () => Navigator.pop(context),
+        ),
+        backgroundColor: Colors.redAccent,
+      ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                const Gap(1),
+                TextContent(
+                  name: widget.companyname.toUpperCase(),
+                  fontsize: 18,
+                  fontweight: FontWeight.w700,
+                  fcolor: Colors.black,
+                ),
+                const Divider(
+                  color: Colors.black,
+                ),
+                const Image(
+                  image: AssetImage('assets/icons/dagupan_bus.png'),
+                  height: 100,
+                ),
+                const Gap(10),
+                TextContent(
+                  name: 'Bus #: ${widget.busnum}',
+                  fcolor: Colors.black,
+                  fontsize: 20,
+                  fontweight: FontWeight.bold,
+                ),
+                TextContent(
+                  name: 'Date: $current',
+                  fcolor: Colors.black,
+                ),
+                Row(
+                  children: [
+                    // Gap(MediaQuery.sizeOf(context).width/4 - 15),
+                    const Spacer(),
+                    TextContent(
+                      name: 'Available Seats: $seatsavail',
+                      fcolor: Colors.black,
+                      fontsize: 20,
+                    ),
+                    const Icon(Icons.chair),
+                    const Spacer()
+                  ],
+                ),
+                const Gap(20),
+                Row(
+                  children: [
+                    TextContent(
+                      name: 'From:',
+                      fcolor: Colors.black,
+                      fontsize: 15,
+                      fontweight: FontWeight.w600,
+                    ),
+                    const Gap(10),
+                    Expanded(
+                      child: ContentContainer(
+                        content: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: TextContent(
+                            name: currentlocc.toUpperCase(),
+                            fontweight: FontWeight.bold,
+                            fontsize: 14,
+                          ),
+                        ),
+                        height: containerheightcalculator(currentlocc),
+                      ),
+                    )
+                  ],
+                ),
+                const Gap(3),
+                Row(
+                  children: [
+                    TextContent(
+                      name: 'To:',
+                      fcolor: Colors.black,
+                      fontsize: 15,
+                      fontweight: FontWeight.w600,
+                    ),
+                    const Gap(10),
+                    Expanded(
+                      child: ContentContainer(
+                        content: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: TextContent(
+                            name: widget.destination.toUpperCase(),
+                            fontweight: FontWeight.bold,
+                            fontsize: 14,
+                          ),
+                        ),
+                        height: containerheightcalculator(widget.destination),
+                      ),
+                    )
+                  ],
+                ),
+                const Gap(10),
+                Row(
+                  children: [
+                    const Spacer(),
+                    DataContainer(
+                      leadingwidget: const Icon(
+                        Icons.chair,
+                        size: 30,
+                      ),
+                      datawidget: TextContent(
+                        name: "1",
                         fontweight: FontWeight.bold,
-                        fontsize: 17,
+                        fontsize: 20,
                       ),
-                      const Gap(60),
-                      DropdownButton<String>(
-                        elevation: 10,
-                        style: GoogleFonts.inter(
-                            color: Colors.white, fontSize: 20),
-                        dropdownColor: const Color.fromARGB(255, 0, 0, 0),
-                        focusColor: Colors.white,
-                        hint: const Text('Select Location'),
-                        value: selectedCity,
-                        onChanged: (String? newValue) async {
-                          setState(() {
-                            selectedCity = newValue;
-                          });
-                          getcoordinates(selectedCity);
-                          getdistance();
-                          // getamount();
-                          // print(coordinates);
-                        },
-                        items: cities.map((String city) {
-                          return DropdownMenuItem<String>(
-                            value: city,
-                            child: Text(city),
-                          );
-                        }).toList(),
+                    ),
+                    const Spacer(),
+                    DataContainer(
+                      leadingwidget: TextContent(
+                        name: "DISTANCE ",
+                        fontweight: FontWeight.bold,
                       ),
-                    ],
-                  ),
-                  const Gap(20),
-                  TextContent(
-                    name: 'Distance to Travel: $distance',
-                    fcolor: Colors.white,
-                    fontsize: 20,
-                  ),
-                  TextContent(
-                    name: 'Amount: P $amount',
-                    fcolor: Colors.white,
-                    fontsize: 20,
-                  ),
-                  const Gap(10),
-                  Fields(
-                    fcon: seatscon,
-                    label: "How many seats do you want to reserve",
-                    leading: Icons.chair,
-                    type: TextInputType.number,
-                  ),
-                  const Spacer(),
-                  Buttons(
-                    onPressed: () {
-                      if (seatsavail - (int.parse(seatscon.text)) < 0) {
-                        StatusAlert.show(context,
-                            title: 'There are only $seatsavail seats available',
-                            configuration: const IconConfiguration(
-                                icon: Icons.chair_sharp));
-                      } else {
-                        print('executed');
-                        reserve();
-                      }
-                    },
-                    name: 'Reserve',
-                  ),
-                ],
-              ),
+                      datawidget: distance != null
+                          ? TextContent(
+                              name: distance.toString(),
+                              fontsize: 20,
+                              fontweight: FontWeight.bold,
+                            )
+                          : const CircularProgressIndicator(),
+                    ),
+                    const Spacer()
+                  ],
+                ),
+                const Gap(10),
+                Row(
+                  children: [
+                    // const Spacer(),
+                    TextContent(
+                      name: "Fare: ",
+                      fontsize: 15,
+                    ),
+                    DataContainer(
+                      leadingwidget: const Icon(
+                        Icons.php,
+                        size: 30,
+                      ),
+                      datawidget: TextContent(
+                        name: amount.toString(),
+                        fontweight: FontWeight.bold,
+                        fontsize: 20,
+                      ),
+                    ),
+                    const Spacer(),
+                     
+                    // DataContainer(leadingwidget: TextContent(name: "DISTANCE ", fontweight: FontWeight.bold,), datawidget: distance != null ? TextContent(name: distance.toString(), fontsize: 20, fontweight: FontWeight.bold,) : const CircularProgressIndicator(),),
+                    const Spacer()
+                  ],
+                ),
+                const Gap(22),
+                Row(
+                  children: [
+                    TextContent(name: "Choose Type : ", fontsize: 17,),
+                    const Gap(10),
+                    DropdownButton<String>(
+                            value: selectedCategory,
+                            icon: const Icon(Icons.arrow_downward),
+                            iconSize: 16,
+                            elevation: 20,
+                            style: const TextStyle(color: Colors.black, fontSize: 19),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.redAccent,
+                            ),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                selectedCategory = newValue!;
+                              });
+                              amountCalculator(selectedCategory);
+                            },
+                            items: categories
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                        ),
+                  ],
+                ),
+                const Gap(70),
+                EButtons(onPressed: reserve, name: "Reserve", bcolor: Colors.redAccent, tcolor: Colors.white, elevation: 10,)
+              ],
             ),
           ),
         ),

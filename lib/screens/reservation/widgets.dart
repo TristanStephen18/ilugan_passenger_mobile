@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
@@ -41,3 +43,67 @@ class Fields extends StatelessWidget {
 //     );
 //   }
 // }
+
+class ContentContainer extends StatelessWidget {
+  ContentContainer({super.key, this.height, this.content});
+
+  double? height;
+  Widget? content;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: height,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black, width: 1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: content,
+    );
+  }
+}
+
+class DataDisplayer extends StatelessWidget {
+  DataDisplayer({super.key, this.title, this.icon});
+
+  Widget? title;
+  Widget? icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: title,
+      leading: icon,
+    );
+  }
+}
+
+class DataContainer extends StatelessWidget {
+  DataContainer({super.key, this.leadingwidget, this.datawidget});
+
+  Widget? leadingwidget;
+  Widget? datawidget;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 45,
+      decoration: BoxDecoration(
+        border: Border.all(
+          width: 1,
+        ),
+        borderRadius: BorderRadius.circular(10)
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            leadingwidget as Widget,
+            const VerticalDivider(),
+            datawidget as Widget
+          ],
+        ),
+      ),
+    );
+  }
+}

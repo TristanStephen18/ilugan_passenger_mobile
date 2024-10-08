@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:google_fonts/google_fonts.dart';
+// import 'package:google_fonts/google_fonts.dart';
 import 'package:ilugan_passenger_mobile_app/screens/authentication/loginscreen.dart';
-import 'package:ilugan_passenger_mobile_app/screens/authentication/signupscreen.dart';
+// import 'package:ilugan_passenger_mobile_app/screens/authentication/signupscreen.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 
 class LandingScreen extends StatelessWidget {

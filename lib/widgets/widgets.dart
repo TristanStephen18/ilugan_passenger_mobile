@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ilugan_passenger_mobile_app/screens/userscreens/busschedules.dart';
+import 'package:ilugan_passenger_mobile_app/screens/userscreens/history.dart';
 import 'package:ilugan_passenger_mobile_app/screens/userscreens/profile.dart';
 
 class Buttons extends StatelessWidget {
@@ -443,7 +444,7 @@ class _AppDrawerState extends State<AppDrawer> {
                         const CircleAvatar(
                           radius: 30,
                           backgroundImage:
-                              AssetImage('assets/icons/profile.png'),
+                              AssetImage('assets/icons/pfp.png'),
                         ),
                         const Gap(10),
                         Column(
@@ -502,6 +503,9 @@ class _AppDrawerState extends State<AppDrawer> {
                     color: Colors.red,
                   ),
                   hoverColor: Colors.green,
+                  onTap: (){
+                    Navigator.of(context).push(MaterialPageRoute(builder: (_)=> const TransactionHistoryScreen()));
+                  },
                 ),
                 const Divider(),
                 ListTile(
