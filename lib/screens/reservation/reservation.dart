@@ -418,11 +418,11 @@ class _SeatReservationScreenState extends State<SeatReservationScreen> {
                         Icons.php,
                         size: 30,
                       ),
-                      datawidget: TextContent(
+                      datawidget: amount != null ? TextContent(
                         name: amount.toString(),
                         fontweight: FontWeight.bold,
                         fontsize: 20,
-                      ),
+                      ) : const CircularProgressIndicator(),
                     ),
                     const Spacer(),
                      

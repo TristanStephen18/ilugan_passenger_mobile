@@ -107,3 +107,28 @@ class DataContainer extends StatelessWidget {
     );
   }
 }
+
+
+class TicketDataDisplayer extends StatelessWidget {
+  TicketDataDisplayer({super.key, this.leading, this.title, this.subtitle});
+
+  Widget? leading;
+  Widget? title;
+  Widget? subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      minVerticalPadding: 0,
+      leading: leading,
+      title: Padding(
+        padding: const EdgeInsets.only(left: 20.0),
+        child: title,
+      ),
+      subtitle: Padding(
+        padding: const EdgeInsets.only(left: 20.0),
+        child: subtitle,
+      ),
+    );
+  }
+}

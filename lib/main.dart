@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 // import 'package:ilugan_passenger_mobile_app/screens/authentication/emailverification.dart';
 // import 'package:ilugan_passenger_mobile_app/screens/index/landingscreen2.dart';
 import 'package:ilugan_passenger_mobile_app/screens/reservation/selectdestination.dart';
+import 'package:ilugan_passenger_mobile_app/screens/reservation/ticketing.dart';
 // import 'package:ilugan_passenger_mobile_app/screens/userscreens/busschedules.dart';
 // import 'package:ilugan_passenger_mobile_app/screens/userscreens/homescreen.dart';
 // import 'package:ilugan_passenger_mobile_app/screens/authentication/signupscreen.dart';
@@ -35,10 +36,10 @@ class Ilugan extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.red,
       ),
       // home: const ApiTry(),
-      home: const SplashScreen(),
+      home: const TicketScreen(),
     );
   }
 }
