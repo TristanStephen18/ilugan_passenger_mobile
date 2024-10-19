@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:ilugan_passenger_mobile_app/screens/authentication/addphonenumber.dart';
-import 'package:ilugan_passenger_mobile_app/screens/userscreens/homescreen.dart';
+// import 'package:ilugan_passenger_mobile_app/screens/userscreens/homescreen.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -94,6 +94,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       label: 'Email',
                       prefix: const Icon(Icons.mail, color: Colors.black,),
                       data:  userData['email'].toString(),
+                    ),
+                    const Gap(20),
+                    ProfileTfields( 
+                      label: 'Passenger Type',
+                      data:  userData['type'].toString(),
+                      prefix: const Icon(Icons.category, color: Colors.black,),
+                      // suffixicon: Icons.edit,
+                      isreadable: toggleedit,
                     ),
                     const Gap(20),
                     TextContent(name: 'Phone',fontsize: 20, fontweight: FontWeight.w700,),

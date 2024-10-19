@@ -1,8 +1,10 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:email_otp/email_otp.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:ilugan_passenger_mobile_app/screens/authentication/emailverification.dart';
+// import 'package:ilugan_passenger_mobile_app/screens/authentication/emailverification.dart';
 
 class SendOtp extends StatelessWidget {
   SendOtp({super.key});

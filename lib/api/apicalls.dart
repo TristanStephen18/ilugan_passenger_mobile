@@ -111,7 +111,7 @@ Future<String?> getDistance(LatLng origin, LatLng end) async {
 
 // Function to get estimated time
 Future<String?> getEstimatedTime(LatLng origin, LatLng end) async {
-  String time= "";
+  // String time= "";
   try {
     final response = await http.get(
       Uri.parse(
@@ -166,4 +166,96 @@ Future<String?> getCityCode(String cityName) async {
     return null;
   }
 }
+
+Future<String?> createPayMongoPaymentLink(double amount) async {
+  // Replace with your actual API key
+  // sString authorizationKey = 'Basic c2tfdGVzdF9YVmZ1c0ZMeldMZ1c3TXFGS3g5RGgyRks6';
+
+  final url = Uri.parse('https://api.paymongo.com/v1/links');
+
+  final headers = {
+    'accept': 'application/json',
+    'content-type': 'application/json',
+    'authorization': 'Basic c2tfdGVzdF9YVmZ1c0ZMeldMZ1c3TXFGS3g5RGgyRks6',
+  };
+
+  final body = json.encode({
+    "data": {
+      "attributes": {
+        "amount": (amount * 1000), // Amount in centavos
+        "description": "Fare Payment",
+        "remarks": 'none',
+      }
+    }
+  });
+
+  try {
+    final response = await http.post(url, headers: headers, body: body);
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      final paymentLink = responseData['data']['attributes']['checkout_url'];
+      final paymentid = responseData['data']['id'];
+      
+      print(paymentLink + " " + paymentid );
+      return paymentLink + " " + paymentid;
+    } else {
+      print('Failed to create payment link: ${response.statusCode}');
+      return null;
+    }
+  } catch (error) {
+    print('Error creating payment link: $error');
+    return null;
+  }
+}
+
+Future<String?> checkpaymentstatus(String paymentId) async {
+   try {
+        final response = await http.get(
+          Uri.parse("https://api.paymongo.com/v1/links/$paymentId"),
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': 'Basic c2tfdGVzdF9YVmZ1c0ZMeldMZ1c3TXFGS3g5RGgyRks6',
+          },
+        );
+
+        if (response.statusCode == 200) {
+          final statusData = json.decode(response.body);
+          String status = statusData["data"]["attributes"]["status"];
+          print(status);
+          if (status == "paid") {
+            return status;
+          }
+        } else {
+          throw Exception("Failed to fetch payment status.");
+        }
+      } catch (e) {
+        print("Error checking payment status: $e");
+      }
+}
+
+Future<String> fetchPolyline(LatLng origin, LatLng destination) async {
+  // Define the HERE API key
+  const String apiKey = 'JS01D6eK9YAqYsGFnKkzT6mYhyWu_hLL3XdkDRSSswM';
+
+  // Build the HERE API URL with the origin and destination
+  final String url =
+      'https://router.hereapi.com/v8/routes?transportMode=car&return=polyline,summary&origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&via=52.52426,13.43000&apiKey=$apiKey';
+
+  // Send the GET request
+  final response = await http.get(Uri.parse(url));
+
+  // Check if the request was successful
+  if (response.statusCode == 200) {
+    // Parse the JSON response
+    final Map<String, dynamic> data = json.decode(response.body);
+
+    // Extract the polyline string from the response
+    String polyline = data['routes'][0]['sections'][0]['polyline'];
+    return polyline;
+  } else {
+    throw Exception('Failed to fetch polyline');
+  }
+}
+
 }

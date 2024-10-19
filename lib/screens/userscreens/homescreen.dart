@@ -9,7 +9,7 @@ import 'package:ilugan_passenger_mobile_app/screens/index/landingscreen2.dart';
 import 'package:ilugan_passenger_mobile_app/screens/userscreens/notification.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/classes.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+// import 'package:qr_flutter/qr_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -57,9 +57,11 @@ class _HomeScreenState extends State<HomeScreen> {
       int occupiedSeats = busData['occupied_seats'] ?? 0;
       int reservedSeats = busData['reserved_seats'] ?? 0;
       GeoPoint geoPoint = busData['current_location'] ?? GeoPoint(0, 0);
+      GeoPoint detination_geopoint = busData['destination_coordinates'] ?? GeoPoint(0, 0);
 
       // Convert GeoPoint to LatLng
       LatLng currentLocation = LatLng(geoPoint.latitude, geoPoint.longitude);
+      LatLng destination_location = LatLng(geoPoint.latitude, geoPoint.longitude);
 
       // Reverse geocoding to get address
       String address = await ApiCalls()
@@ -83,7 +85,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   reservedSeats,
                   companyId,
                   myloc,
-                  hasreservation);
+                  hasreservation,
+                  destination_location,
+                  currentLocation
+                  );
             },
             icon: busmarkers,
           ),
@@ -214,26 +219,6 @@ class _HomeScreenState extends State<HomeScreen> {
       MaterialPageRoute(builder: (_) => LandingScreen2()),
     );
   }
-
-  void showQr() {
-  print('clicked');
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Reservation Ticket'),
-        content: SizedBox(
-          height: 200,  // Set a fixed height for the QR container
-          width: 200,   // Set a fixed width for the QR container
-          child: QrImageView(
-            size: 150,  // Set the size of the QR code inside
-            data: FirebaseAuth.instance.currentUser!.uid.toString(),
-          ),
-        ),
-      );
-    },
-  );
-}
 
 
   late GoogleMapController mapController;

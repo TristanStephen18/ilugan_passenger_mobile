@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
+import 'package:ilugan_passenger_mobile_app/screens/authentication/chooseaccounttype.dart';
 import 'package:ilugan_passenger_mobile_app/screens/authentication/signupscreen.dart';
 import 'package:ilugan_passenger_mobile_app/screens/userscreens/homescreen.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
@@ -121,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             TextButton(
                               onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(builder: (_)=>SignUpScreen()));
+                                Navigator.of(context).push(MaterialPageRoute(builder: (_)=>PassengerTypeScreen()));
                               },
                               child: TextContent(name: 'Dont have an account?', fcolor: const Color.fromARGB(255, 117, 190, 250),)
                             ),

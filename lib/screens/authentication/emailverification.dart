@@ -51,7 +51,8 @@ class _EmailVeficationScreenState extends State<EmailVeficationScreen> {
         'email': widget.email,
         'password': widget.password,
         'hasphonenumber': false,
-        ' phonenumber': ""
+        ' phonenumber': "",
+        'type': 'Regular'
       });
 
       // User? user = usercred.user;

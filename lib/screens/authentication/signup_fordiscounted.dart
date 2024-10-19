@@ -1,15 +1,23 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:quickalert/quickalert.dart';
-import 'package:ilugan_passenger_mobile_app/screens/authentication/emailverification.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 
-class SignUpScreen extends StatefulWidget {
+class DiscountedSignUPScreen extends StatefulWidget {
+  DiscountedSignUPScreen({super.key, this.idimage, required this.acctype});
+
+  String acctype;
+  File? idimage;
+
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  _DiscountedSignUPScreenState createState() => _DiscountedSignUPScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _DiscountedSignUPScreenState extends State<DiscountedSignUPScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -21,7 +29,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return _passwordController.text == _confirmPasswordController.text;
   }
 
-  void _submit() {
+  void _submit() async {
     if (_formKey.currentState!.validate()) {
       if (!_validatePasswords()) {
         QuickAlert.show(
@@ -31,19 +39,56 @@ class _SignUpScreenState extends State<SignUpScreen> {
           text: 'Please re-enter your password',
         );
       } else {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => EmailVeficationScreen(
-              username: _usernameController.text,
-              email: _emailController.text,
-              password: _passwordController.text,
-              // phonenum: '+63${_phoneController.text}',
-            ),
-          ),
-        );
+        uploadIdToStorage();
       }
     }
   }
+
+  void uploadIdToStorage() async {
+  if (widget.idimage != null) {
+    // Assuming widget.idimage is a File
+    File file = widget.idimage!;  // Ensure that widget.idimage is a File
+    String path = 'idpictures/${file.path.split('/').last}';  // Use the file name from its path
+
+    // Reference to Firebase Storage
+    final storageRef = FirebaseStorage.instance.ref().child(path);
+
+    // Upload the file to Firebase Storage
+    UploadTask uploadTask = storageRef.putFile(file);
+
+    // Optional: Listen to upload progress
+    uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+      print('Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100} %');
+    });
+
+    // Wait for the upload to complete
+    TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {
+      print('File uploaded!');
+    });
+
+    // Get the download URL for the uploaded file
+    String downloadURL = await taskSnapshot.ref.getDownloadURL();
+    print('Download URL: $downloadURL');
+
+    await FirebaseFirestore.instance.collection('requests').doc(_emailController.text).set({
+        'email': _emailController.text,
+        'password': _passwordController.text,
+        'type': widget.acctype,
+        'imagelocation': downloadURL,
+        'status' : 'pending'  // Save the download URL in Firestore
+      });
+
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.success,
+        title: 'Request sent!',
+        text: 'Your account request has been submitted.',
+      );
+  } else {
+    print('No file selected');
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +172,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     alignment: Alignment.bottomCenter,
                     child: EButtons(
                       onPressed: _submit,
-                      name: "Create Account",
+                      name: "Send Request",
                       bcolor: Colors.red,
                       tcolor: Colors.white,
                       elevation: 16,

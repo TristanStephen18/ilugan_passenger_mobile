@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 // import 'package:google_fonts/google_fonts.dart';
@@ -20,7 +20,10 @@ class DisplayItems {
       int reserved,
       String companyId,
       LatLng currentloc,
-      bool hasreservation) {
+      bool hasreservation,
+      LatLng destinationcoordinates,
+      LatLng buslocation
+      ) {
     return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
       behavior: SnackBarBehavior.fixed,
@@ -201,22 +204,18 @@ class DisplayItems {
                       context,
                       title: 'Bus is fully occupied',
                       configuration: const IconConfiguration(
-                        icon: Icons.bus_alert_outlined,
-                        color: Colors.red
-                      ),
+                          icon: Icons.bus_alert_outlined, color: Colors.red),
                       duration: const Duration(seconds: 1),
                     );
-                  }else if(hasreservation){
+                  } else if (hasreservation) {
                     StatusAlert.show(
                       context,
                       title: 'You already have a reservation',
                       configuration: const IconConfiguration(
-                        icon: Icons.error,
-                        color: Colors.red
-                      ),
+                          icon: Icons.error, color: Colors.red),
                       duration: const Duration(seconds: 1),
                     );
-                } else {
+                  } else {
                     print('Now reserving');
                     // StatusAlert.show(
                     //   context,
@@ -228,20 +227,32 @@ class DisplayItems {
                     //   duration: const Duration(seconds: 1),
                     // );
                     // Navigator.of(context).pop();
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_)=>SelectLocationScreen(companyId: companyId, compName: buscompany, busnum: platenumber, currentloc: currentloc,)));
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => SelectLocationScreen(
+                              companyId: companyId,
+                              compName: buscompany,
+                              busnum: platenumber,
+                              currentloc: currentloc,
+                              destinationloc: destinationcoordinates,
+                              currentlocation: buslocation,
+                            )));
                   }
                 },
                 style: OutlinedButton.styleFrom(
-                  backgroundColor:
-                      availableseats == 0 ? Colors.redAccent : Colors.blueAccent,
+                  backgroundColor: availableseats == 0
+                      ? Colors.redAccent
+                      : Colors.blueAccent,
                   foregroundColor:
                       availableseats == 0 ? Colors.white : Colors.white,
                   fixedSize: Size(MediaQuery.sizeOf(context).width, 50),
                 ),
                 child: TextContent(
-                    name: availableseats == 0
-                        ? 'STANDING/FULLY OCCUPIED'
-                        : 'RESERVE A SEAT', fcolor: Colors.black, fontsize: 20,))
+                  name: availableseats == 0
+                      ? 'STANDING/FULLY OCCUPIED'
+                      : 'RESERVE A SEAT',
+                  fcolor: Colors.black,
+                  fontsize: 20,
+                ))
           ],
         ),
       ),
