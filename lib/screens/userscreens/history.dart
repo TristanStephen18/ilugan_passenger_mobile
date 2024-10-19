@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ilugan_passenger_mobile_app/firebase_helpers/fetching.dart';
+import 'package:ilugan_passenger_mobile_app/screens/userscreens/ticketview.dart';
 import 'package:intl/intl.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 
@@ -29,13 +31,33 @@ class TransactionHistoryScreen extends StatelessWidget {
   }
 }
 
-class ReservationList extends StatelessWidget {
+class ReservationList extends StatefulWidget {
+  @override
+  State<ReservationList> createState() => _ReservationListState();
+}
+
+class _ReservationListState extends State<ReservationList> {
   final String passengerId = FirebaseAuth.instance.currentUser!.uid;
 
   // Function to format the Firestore Timestamp
   String formatDate(Timestamp timestamp) {
     var date = timestamp.toDate();
     return DateFormat('yyyy-MM-dd – kk:mm a').format(date);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    gettype();
+  }
+
+  String? acctype;
+
+  Future<void> gettype() async {
+    String? type = await FetchingData().getacctype();
+    setState(() {
+      acctype = type;
+    });
   }
 
   @override
@@ -74,19 +96,45 @@ class ReservationList extends StatelessWidget {
               child: ListTile(
                 title: Row(
                   children: [
-                    TextContent(name: '${reservation['bus_company']}', fontsize: 17, fontweight: FontWeight.bold,),
+                    TextContent(
+                      name: '${reservation['bus_company']}',
+                      fontsize: 17,
+                      fontweight: FontWeight.bold,
+                    ),
                     const Spacer(),
-                    TextContent(name: 'Php ${reservation['fare'].toStringAsFixed(2)}', fontsize: 17, fontweight: FontWeight.bold,),
+                    TextContent(
+                      name: 'Php ${reservation['fare'].toStringAsFixed(2)}',
+                      fontsize: 17,
+                      fontweight: FontWeight.bold,
+                    ),
                   ],
                 ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextContent(name: 'Date: $formattedDate'),
-                    TextContent(name: 'Destination: ${reservation['to'].toString().toUpperCase()}', fontsize: 15,),
+                    TextContent(
+                      name:
+                          'Destination: ${reservation['to'].toString().toUpperCase()}',
+                      fontsize: 15,
+                    ),
                   ],
                 ),
                 isThreeLine: true,
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => TicketView(
+                            amount: reservation['fare'].toString(),
+                            busnum: reservation['busnumber'],
+                            companyname: reservation['bus_company'],
+                            currentlocc: reservation['from'],
+                            date: reservation['date_and_time'],
+                            distance: reservation['distance_traveled'],
+                            destination: reservation['to'],
+                            resnum: reservation['reservation_number'],
+                            type: acctype.toString(),
+                          )));
+                },  
                 // trailing: Text('Fare: Php ${reservation['fare']}'),
               ),
             );

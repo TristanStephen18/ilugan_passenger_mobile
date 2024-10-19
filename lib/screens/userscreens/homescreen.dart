@@ -272,7 +272,7 @@ class _HomeScreenState extends State<HomeScreen> {
             markers: markers,
           ),
         ),
-        
+        // floatingActionButton: FloatingActionButton(onPressed: getCurrentLocation, child: TextContent(name: 'My Location'),),
        ),
     );
   }
