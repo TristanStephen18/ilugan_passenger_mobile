@@ -1,9 +1,15 @@
+// ignore_for_file: must_be_immutable, use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+// import 'package:ilugan_passenger_mobile_app/firebase_helpers/fetching.dart';
+import 'package:ilugan_passenger_mobile_app/screens/authentication/emailverification.dart';
+import 'package:ilugan_passenger_mobile_app/screens/authentication/loginscreen.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 
@@ -21,7 +27,8 @@ class _DiscountedSignUPScreenState extends State<DiscountedSignUPScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   // final TextEditingController _phoneController = TextEditingController();
 
@@ -40,55 +47,62 @@ class _DiscountedSignUPScreenState extends State<DiscountedSignUPScreen> {
         );
       } else {
         uploadIdToStorage();
+        // Navigator.of(context).push(MaterialPageRoute(
+        //     builder: (_) => EmailVeficationScreen(
+        //         username: _usernameController.text,
+        //         email: _emailController.text,
+        //         password: _passwordController.text,
+        //         id: widget.idimage,
+        //         )));
       }
     }
   }
 
   void uploadIdToStorage() async {
-  if (widget.idimage != null) {
-    // Assuming widget.idimage is a File
-    File file = widget.idimage!;  // Ensure that widget.idimage is a File
-    String path = 'idpictures/${file.path.split('/').last}';  // Use the file name from its path
+    if (widget.idimage != null) {
+      File file = widget.idimage!;
+      String path = 'idpictures/${file.path.split('/').last}';
+      final storageRef = FirebaseStorage.instance.ref().child(path);
 
-    // Reference to Firebase Storage
-    final storageRef = FirebaseStorage.instance.ref().child(path);
+      UploadTask uploadTask = storageRef.putFile(file);
 
-    // Upload the file to Firebase Storage
-    UploadTask uploadTask = storageRef.putFile(file);
+      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+        print(
+            'Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100} %');
+      });
 
-    // Optional: Listen to upload progress
-    uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-      print('Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100} %');
-    });
+      TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {
+        print('File uploaded!');
+      });
 
-    // Wait for the upload to complete
-    TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {
-      print('File uploaded!');
-    });
+      String downloadURL = await taskSnapshot.ref.getDownloadURL();
+      print('Download URL: $downloadURL');
 
-    // Get the download URL for the uploaded file
-    String downloadURL = await taskSnapshot.ref.getDownloadURL();
-    print('Download URL: $downloadURL');
-
-    await FirebaseFirestore.instance.collection('requests').doc(_emailController.text).set({
+      await FirebaseFirestore.instance
+          .collection('requests')
+          .doc(_emailController.text)
+          .set({
+        'username': _usernameController.text,
         'email': _emailController.text,
         'password': _passwordController.text,
         'type': widget.acctype,
         'imagelocation': downloadURL,
-        'status' : 'pending'  // Save the download URL in Firestore
+        'accepted': false
       });
 
-      QuickAlert.show(
-        context: context,
-        type: QuickAlertType.success,
-        title: 'Request sent!',
-        text: 'Your account request has been submitted.',
-      );
-  } else {
-    print('No file selected');
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => EmailVeficationScreen(
+                username: _usernameController.text,
+                email: _emailController.text,
+                password: _passwordController.text,
+                id: widget.idimage,
+                idurl: downloadURL,
+                type: widget.acctype,
+              )));
+    } else {
+      print('No file selected');
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -97,8 +111,12 @@ class _DiscountedSignUPScreenState extends State<DiscountedSignUPScreen> {
       appBar: AppBar(
         centerTitle: true,
         toolbarHeight: 70,
-        title: TextContent(name: 'Create Account', fontsize: 
-        20, fcolor: Colors.white, fontweight: FontWeight.w500,),
+        title: TextContent(
+          name: 'Create Account',
+          fontsize: 20,
+          fcolor: Colors.white,
+          fontweight: FontWeight.w500,
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.yellow),
           onPressed: () => Navigator.pop(context),
@@ -110,7 +128,7 @@ class _DiscountedSignUPScreenState extends State<DiscountedSignUPScreen> {
             child: Image(
               image: AssetImage("assets/images/logo/logo.png"),
               height: 50,
-              width: 50 ,
+              width: 50,
             ),
           ),
         ],
@@ -118,12 +136,11 @@ class _DiscountedSignUPScreenState extends State<DiscountedSignUPScreen> {
       body: Container(
         height: MediaQuery.sizeOf(context).height,
         decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/backgroundimages/signupbg.avif'),
-            opacity: 0.8,
-            alignment: Alignment.bottomCenter
-            )
-        ),
+            image: DecorationImage(
+                image:
+                    AssetImage('assets/images/backgroundimages/signupbg.avif'),
+                opacity: 0.8,
+                alignment: Alignment.bottomCenter)),
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(30.0),
@@ -132,7 +149,12 @@ class _DiscountedSignUPScreenState extends State<DiscountedSignUPScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextContent(name: "Create your ILugan Account and start your adventure!", fontsize: 17,fontweight: FontWeight.bold,),
+                  TextContent(
+                    name:
+                        "Create your ILugan Account and start your adventure!",
+                    fontsize: 17,
+                    fontweight: FontWeight.bold,
+                  ),
                   const Gap(3),
                   TextContent(name: "Please fill in the following"),
                   const Gap(40),
@@ -172,7 +194,7 @@ class _DiscountedSignUPScreenState extends State<DiscountedSignUPScreen> {
                     alignment: Alignment.bottomCenter,
                     child: EButtons(
                       onPressed: _submit,
-                      name: "Send Request",
+                      name: "Create Account",
                       bcolor: Colors.red,
                       tcolor: Colors.white,
                       elevation: 16,
@@ -183,6 +205,142 @@ class _DiscountedSignUPScreenState extends State<DiscountedSignUPScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class AdminVerification extends StatefulWidget {
+  AdminVerification(
+      {super.key,
+      required this.idimage,
+      required this.email,
+      required this.password,
+      required this.username,
+      required this.type,
+      required this.url
+      });
+
+  File idimage;
+  String email;
+  String password;
+  String username;
+  String type;
+  String url;
+
+  @override
+  State<AdminVerification> createState() => _AdminVerificationState();
+}
+
+class _AdminVerificationState extends State<AdminVerification> {
+  @override
+  void initState() {
+    super.initState();
+    isAccepted(widget.email);
+  }
+
+  void isAccepted(String email) {
+  FirebaseFirestore.instance
+      .collection('requests')
+      .doc(email)
+      .snapshots()
+      .listen((DocumentSnapshot snapshots) async {
+    print('Firestore listener triggered');  // Debug print
+    print(email);
+
+    if (snapshots.exists) {
+      print('Document exists');  // Debug print
+      var data = snapshots.data() as Map<String, dynamic>;
+      bool status = data['accepted'];
+      print('isaccepted value: $status');  // Debug print for isaccepted
+
+      if (status) {
+        print('isaccepted is true, proceeding with account creation...');  // Debug print
+        QuickAlert.show(
+          context: context,
+          type: QuickAlertType.loading,
+          title: "Creating your account",
+          text: 'Ilugan is now creating your account',
+        );
+
+        UserCredential user = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: email, password: widget.password);
+        String id = user.user!.uid;
+        
+        await FirebaseFirestore.instance.collection('passengers').doc(id).set({
+          'username': widget.username,
+          'email': widget.email,
+          'password': widget.password,
+          'hasphonenumber': false,
+          'phonenumber': "",
+          'type': widget.type,
+          'id': widget.url,
+          'datecreated': DateTime.now()
+        });
+        
+        Navigator.of(context).pop();
+        
+        QuickAlert.show(
+          context: context,
+          type: QuickAlertType.success,
+          showConfirmBtn: true,
+          onConfirmBtnTap: () {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => LoginScreen()));
+          },
+          title: 'Account Created',
+          text: 'You can now log in your account!',
+        );
+      }
+    } else {
+      print('Document does not exist');  // Debug print
+    }
+  });
+}
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        toolbarHeight: 60,
+        title: TextContent(
+          name: 'ID Verification',
+          fontsize: 18,
+          fcolor: Colors.white,
+          fontweight: FontWeight.w500,
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.yellow),
+          onPressed: () => Navigator.pop(context),
+        ),
+        backgroundColor: Colors.redAccent,
+      ),
+      body: Column(
+        children: [
+          const Spacer(),
+          Center(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.file(
+                widget.idimage,
+                fit: BoxFit.cover,
+                width: 200,
+                height: 200,
+              ),
+            ),
+          ),
+          const Gap(20),
+          TextContent(
+            name: 'Admin is verifying your ID...',
+            fontsize: 30,
+            fontweight: FontWeight.bold,
+          ),
+          const Gap(100),
+          const Spacer()
+        ],
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class FetchingData {
   Future<String?> getacctype() async {
@@ -26,5 +27,23 @@ class FetchingData {
     } else {
       return null; 
     }
+  }
+
+  void isAccepted(String email){
+    FirebaseFirestore.instance
+        .collection('request')
+        .doc(email)
+        .snapshots().listen((DocumentSnapshot snapshots){
+          if(snapshots.exists){
+           var data = snapshots.data() as Map<String, dynamic>;
+           bool status = data['isaccepted'];
+
+           if(status){
+            print(status);
+           }
+          }else{
+            print('Error fetching data');
+          }
+        });
   }
 }

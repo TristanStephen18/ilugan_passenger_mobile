@@ -73,13 +73,18 @@ class _TicketViewState extends State<TicketView> {
                     borderRadius: BorderRadius.circular(20),
                     color: Colors.white,
                   ),
-                  height: MediaQuery.sizeOf(context).height / 1.4,
+                  height: MediaQuery.sizeOf(context).height / 1.3,
                   child: Padding(
-                    padding: const EdgeInsets.all(10.0),
+                    padding: const EdgeInsets.all(20.0),
                     child: Column(
+                      // mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Gap(10),
-                        TextContent(
+                        Center(
+                          child: Column(
+                            children: [
+                              TextContent(
                           name: 'Reservation #: ${widget.resnum}',
                           fontsize: 16,
                           fontweight: FontWeight.bold,
@@ -93,16 +98,19 @@ class _TicketViewState extends State<TicketView> {
                           name: widget.busnum,
                           fontweight: FontWeight.w400,
                         ),
+                            ],
+                          ),
+                        ),
                         const Divider(),
                         const Gap(20),
                         // Replacing TicketViewDataDisplayer with TextContent
                         TextContent(
-                          name: 'Pick Up Location: ${widget.currentlocc}',
+                          name: 'Pick Up Location:\n \t${widget.currentlocc.toUpperCase()}',
                           fontsize: 15,
                           fontweight: FontWeight.bold,
                         ),
                         TextContent(
-                          name: 'Destination: ${widget.destination}',
+                          name: 'Destination:\n \t${widget.destination.toUpperCase()}',
                           fontsize: 15,
                           fontweight: FontWeight.bold,
                         ),
@@ -123,14 +131,16 @@ class _TicketViewState extends State<TicketView> {
                           fontweight: FontWeight.bold,
                         ),
                         TextContent(
-                          name: 'Distance: ${widget.distance}',
+                          name: 'Distance traveled: ${widget.distance}',
                           fontsize: 15,
                           fontweight: FontWeight.bold,
                         ),
                         const Gap(20),
-                        QrImageView(
-                          data: widget.resnum,
-                          size: 200,
+                        Center(
+                          child: QrImageView(
+                            data: widget.resnum,
+                            size: 200,
+                          ),
                         ),
                         const Gap(20),
                       ],

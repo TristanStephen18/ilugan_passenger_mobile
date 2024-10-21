@@ -34,6 +34,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => EmailVeficationScreen(
+              // type: 'Regular',
               username: _usernameController.text,
               email: _emailController.text,
               password: _passwordController.text,

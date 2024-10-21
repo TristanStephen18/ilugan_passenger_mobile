@@ -1,5 +1,7 @@
 // ignore_for_file: must_be_immutable, use_build_context_synchronously
 
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_otp/email_otp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:gap/gap.dart';
 import 'package:ilugan_passenger_mobile_app/screens/authentication/loginscreen.dart';
+import 'package:ilugan_passenger_mobile_app/screens/authentication/signup_fordiscounted.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 import 'package:quickalert/quickalert.dart';
 
@@ -16,11 +19,17 @@ class EmailVeficationScreen extends StatefulWidget {
       required this.username,
       required this.email,
       required this.password,
+      this.type,
+      this.id,
+      this.idurl
       });
 
   String email;
   String password;
   String username;
+  File? id;
+  String? type;
+  String? idurl;
 
   @override
   State<EmailVeficationScreen> createState() => _EmailVeficationScreenState();
@@ -35,38 +44,59 @@ class _EmailVeficationScreenState extends State<EmailVeficationScreen> {
   // void createaccount(BuildContext context)async
 
   void createaccount(BuildContext context) async {
-    try {
-      QuickAlert.show(
-          context: context,
-          type: QuickAlertType.loading,
-          text: "Creating account");
-      UserCredential usercred = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-              email: widget.email, password: widget.password);
+    if (widget.id != null) {
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => AdminVerification(
+              idimage: widget.id as File,
+              email: widget.email,
+              password: widget.password,
+              username: widget.username,
+              type: widget.type.toString(),
+              url: widget.idurl.toString(),
+              )));
+    } else {
+      try {
+        QuickAlert.show(
+            context: context,
+            type: QuickAlertType.loading,
+            text: "Creating account");
+        UserCredential usercred = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: widget.email, password: widget.password);
 
-      String id = usercred.user!.uid;
+        String id = usercred.user!.uid;
 
-      await FirebaseFirestore.instance.collection('passengers').doc(id).set({
-        'username': widget.username,
-        'email': widget.email,
-        'password': widget.password,
-        'hasphonenumber': false,
-        ' phonenumber': "",
-        'type': 'Regular'
-      });
+        await FirebaseFirestore.instance.collection('passengers').doc(id).set({
+          'username': widget.username,
+          'email': widget.email,
+          'password': widget.password,
+          'hasphonenumber': false,
+          'phonenumber': "",
+          'type': 'Regular'
+        });
 
-      // User? user = usercred.user;
+        // User? user = usercred.user;
 
-      Navigator.of(context).pop();
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (_) => LoginScreen()));
-    } on FirebaseAuthException catch (error) {
-      Navigator.of(context).pop();
-      QuickAlert.show(
-          context: context,
-          type: QuickAlertType.error,
-          text: "error",
-          title: error.toString());
+        Navigator.of(context).pop();
+
+        QuickAlert.show(
+            context: context,
+            type: QuickAlertType.success,
+            showConfirmBtn: true,
+            onConfirmBtnTap: () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => LoginScreen()));
+            },
+            title: 'Account Created',
+            text: 'You can now log in your account!');
+      } on FirebaseAuthException catch (error) {
+        Navigator.of(context).pop();
+        QuickAlert.show(
+            context: context,
+            type: QuickAlertType.error,
+            text: "error",
+            title: error.toString());
+      }
     }
   }
 

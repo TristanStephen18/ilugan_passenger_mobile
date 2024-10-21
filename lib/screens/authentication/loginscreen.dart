@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,14 +27,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void checklogin()async{
     if(formkey.currentState!.validate()){
-    QuickAlert.show(context: context, type: QuickAlertType.loading, text: "Processing", title: "signing you in");
+    QuickAlert.show(context: context, type: QuickAlertType.loading, text: "Logging you in", title: "ILugan");
     await FirebaseAuth.instance.signInWithEmailAndPassword(email: emailcon.text, 
     password: passcon.text).then((UserCredential cred) async{
       Navigator.of(context).pop();
       Navigator.of(context).push(MaterialPageRoute(builder: (_)=>const HomeScreen()));
     }).catchError((error){
       Navigator.of(context).pop();
-      QuickAlert.show(context: context, type: QuickAlertType.error, text: error.toString(), title: "OOOOpppss");
+      QuickAlert.show(context: context, type: QuickAlertType.error, text: error.message.toString(), title: "OOOOpppss");
     });
   }else{
     return;

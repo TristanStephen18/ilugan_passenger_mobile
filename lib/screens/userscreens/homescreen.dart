@@ -270,6 +270,8 @@ class _HomeScreenState extends State<HomeScreen> {
               mapController = controller;
             },
             markers: markers,
+            myLocationButtonEnabled: true,
+            myLocationEnabled: true,
           ),
         ),
         // floatingActionButton: FloatingActionButton(onPressed: getCurrentLocation, child: TextContent(name: 'My Location'),),
