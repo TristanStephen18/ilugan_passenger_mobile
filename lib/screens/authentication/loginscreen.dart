@@ -8,6 +8,7 @@ import 'package:gap/gap.dart';
 import 'package:ilugan_passenger_mobile_app/screens/authentication/chooseaccounttype.dart';
 import 'package:ilugan_passenger_mobile_app/screens/authentication/signupscreen.dart';
 import 'package:ilugan_passenger_mobile_app/screens/userscreens/homescreen.dart';
+import 'package:ilugan_passenger_mobile_app/screens/userscreens/typecheckerscreen.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 import 'package:quickalert/quickalert.dart';
 
@@ -31,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
     await FirebaseAuth.instance.signInWithEmailAndPassword(email: emailcon.text, 
     password: passcon.text).then((UserCredential cred) async{
       Navigator.of(context).pop();
-      Navigator.of(context).push(MaterialPageRoute(builder: (_)=>const HomeScreen()));
+      Navigator.of(context).push(MaterialPageRoute(builder: (_)=>const TypeCheckerScreen()));
     }).catchError((error){
       Navigator.of(context).pop();
       QuickAlert.show(context: context, type: QuickAlertType.error, text: error.message.toString(), title: "OOOOpppss");
@@ -124,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             TextButton(
                               onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(builder: (_)=>PassengerTypeScreen()));
+                                Navigator.of(context).push(MaterialPageRoute(builder: (_)=>SignUpScreen()));
                               },
                               child: TextContent(name: 'Dont have an account?', fcolor: const Color.fromARGB(255, 117, 190, 250),)
                             ),

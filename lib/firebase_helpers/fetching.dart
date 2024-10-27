@@ -46,4 +46,8 @@ class FetchingData {
           }
         });
   }
+
+  // Future<String?> typechecker()async {
+
+  // }
 }

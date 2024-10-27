@@ -1,8 +1,13 @@
+// import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:ilugan_passenger_mobile_app/screens/authentication/idpic.dart';
-import 'package:ilugan_passenger_mobile_app/screens/authentication/signup_fordiscounted.dart';
-import 'package:ilugan_passenger_mobile_app/screens/authentication/signupscreen.dart';
+import 'package:ilugan_passenger_mobile_app/screens/userscreens/accountypeconfirmed.dart';
+// import 'package:ilugan_passenger_mobile_app/screens/authentication/idverification.dart';
+// import 'package:ilugan_passenger_mobile_app/screens/authentication/signupscreen.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 
 class PassengerTypeScreen extends StatefulWidget {
@@ -12,6 +17,27 @@ class PassengerTypeScreen extends StatefulWidget {
 
 class _PassengerTypeScreenState extends State<PassengerTypeScreen> {
   String selectedPassengerType = '';
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    requestpermission();
+  }
+
+  void requestpermission() async {
+    NotificationSettings permission = await messaging.requestPermission();
+    // if(permission.authorizationStatus == "")
+    print('Permission Status: ${permission.authorizationStatus}');
+
+  }
+
+  void updateaccountdata() async {
+    await FirebaseFirestore.instance.collection('passengers').doc(FirebaseAuth.instance.currentUser!.uid).update({
+      'type' : 'Regular'
+    });
+     Navigator.of(context).push(MaterialPageRoute(builder: (_)=>const AcceptedAccountype()));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +46,7 @@ class _PassengerTypeScreenState extends State<PassengerTypeScreen> {
         centerTitle: true,
         toolbarHeight: 70,
         title: TextContent(
-          name: 'Passenger Type',
+          name: 'Account Set Up',
           fontsize: 20,
           fcolor: Colors.white,
           fontweight: FontWeight.w500,
@@ -82,7 +108,8 @@ class _PassengerTypeScreenState extends State<PassengerTypeScreen> {
               Navigator.of(context).push(MaterialPageRoute(builder: (_)=>PhotoIdScreen(type: selectedPassengerType)));
             }else{
               print(selectedPassengerType);
-              Navigator.of(context).push(MaterialPageRoute(builder: (_)=>SignUpScreen()));
+              // Navigator.of(context).push(MaterialPageRoute(builder: (_)=>AcceptedAccountype()));
+              updateaccountdata();
             }
           } else {
             // Show a message to select a passenger type

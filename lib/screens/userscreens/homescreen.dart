@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +28,11 @@ class _HomeScreenState extends State<HomeScreen> {
     getCurrentLocation();
     customIconforMovingBuses();
     fetchBusesForCompany();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   LatLng myloc = const LatLng(120.56463553247369, 120.56463553247369);
@@ -164,15 +171,6 @@ class _HomeScreenState extends State<HomeScreen> {
     ).listen((position) {
       myloc = LatLng(position.latitude, position.longitude);
       LatLng currentPosition = LatLng(position.latitude, position.longitude);
-      markers.removeWhere((marker) => marker.markerId.value == 'user_location');
-      markers.add(
-        Marker(
-          markerId: const MarkerId('user_location'),
-          position: currentPosition,
-          infoWindow: const InfoWindow(title: 'You are here'),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-        ),
-      );
       setToLocation(currentPosition);
     });
   }

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
-String apiKeyDistance = 'plpzSXk6wsl0A0OsQxHT4VUJLvCQUHaOaYRuqsieIdc5pswMo6aIeSm5r6eHyynp';
+String apiKeyDistance = '32OQ6PekD6m1FLGbx3KHHIF21E7sRGpuk9CU3urbZMsDPzaCvDTfTuqjaS2o24fF';
 
 class ApiCalls {
   Future<String> reverseGeocode(double lat, double lon) async { 
@@ -132,40 +132,40 @@ Future<String?> getEstimatedTime(LatLng origin, LatLng end) async {
   }
 }
 
-Future<String?> getCityCode(String cityName) async {
-  final url = Uri.parse('https://psgc.cloud/api/city');
+// Future<String?> getCityCode(String cityName) async {
+//   final url = Uri.parse('https://psgc.cloud/api/city');
 
-  try {
-    // Make the HTTP GET request
-    final response = await http.get(url);
+//   try {
+//     // Make the HTTP GET request
+//     final response = await http.get(url);
 
-    // Check if the request was successful
-    if (response.statusCode == 200) {
-      // Decode the JSON response
-      List<dynamic> cities = jsonDecode(response.body);
+//     // Check if the request was successful
+//     if (response.statusCode == 200) {
+//       // Decode the JSON response
+//       List<dynamic> cities = jsonDecode(response.body);
 
-      // Find the city by name (case-insensitive)
-      var city = cities.firstWhere(
-          (c) => c['name'].toString().toLowerCase() == cityName.toLowerCase(),
-          orElse: () => null);
+//       // Find the city by name (case-insensitive)
+//       var city = cities.firstWhere(
+//           (c) => c['name'].toString().toLowerCase() == cityName.toLowerCase(),
+//           orElse: () => null);
 
-      // If city found, return the PSGC code
-      if (city != null) {
-        print('PSGC code for $cityName: ${city['code']}');
-        return city['code'].toString();
-      } else {
-        print('City not found.');
-        return null;
-      }
-    } else {
-      print('Failed to load cities');
-      return null;
-    }
-  } catch (e) {
-    print('Error: $e');
-    return null;
-  }
-}
+//       // If city found, return the PSGC code
+//       if (city != null) {
+//         print('PSGC code for $cityName: ${city['code']}');
+//         return city['code'].toString();
+//       } else {
+//         print('City not found.');
+//         return null;
+//       }
+//     } else {
+//       print('Failed to load cities');
+//       return null;
+//     }
+//   } catch (e) {
+//     print('Error: $e');
+//     return null;
+//   }
+// }
 
 Future<String?> createPayMongoPaymentLink(double amount) async {
   // Replace with your actual API key

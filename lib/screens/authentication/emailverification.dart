@@ -5,11 +5,12 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_otp/email_otp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:gap/gap.dart';
 import 'package:ilugan_passenger_mobile_app/screens/authentication/loginscreen.dart';
-import 'package:ilugan_passenger_mobile_app/screens/authentication/signup_fordiscounted.dart';
+import 'package:ilugan_passenger_mobile_app/screens/authentication/idverification.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 import 'package:quickalert/quickalert.dart';
 
@@ -19,17 +20,11 @@ class EmailVeficationScreen extends StatefulWidget {
       required this.username,
       required this.email,
       required this.password,
-      this.type,
-      this.id,
-      this.idurl
       });
 
   String email;
   String password;
   String username;
-  File? id;
-  String? type;
-  String? idurl;
 
   @override
   State<EmailVeficationScreen> createState() => _EmailVeficationScreenState();
@@ -40,21 +35,29 @@ class _EmailVeficationScreenState extends State<EmailVeficationScreen> {
   void initState() {
     super.initState();
     sendOTP();
+    gettoken();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
   // void createaccount(BuildContext context)async
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  String? fcmtoken;
+
+  void gettoken() async {
+    String? token = await messaging.getToken();
+    if(token != null){
+      setState(() {
+        fcmtoken = token;
+    });
+    }else{
+      print('Token not created');
+    }
+  }
 
   void createaccount(BuildContext context) async {
-    if (widget.id != null) {
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (_) => AdminVerification(
-              idimage: widget.id as File,
-              email: widget.email,
-              password: widget.password,
-              username: widget.username,
-              type: widget.type.toString(),
-              url: widget.idurl.toString(),
-              )));
-    } else {
       try {
         QuickAlert.show(
             context: context,
@@ -72,7 +75,8 @@ class _EmailVeficationScreenState extends State<EmailVeficationScreen> {
           'password': widget.password,
           'hasphonenumber': false,
           'phonenumber': "",
-          'type': 'Regular'
+          'type': '',
+          'token' : fcmtoken
         });
 
         // User? user = usercred.user;
@@ -97,7 +101,6 @@ class _EmailVeficationScreenState extends State<EmailVeficationScreen> {
             text: "error",
             title: error.toString());
       }
-    }
   }
 
   void sendOTP() {

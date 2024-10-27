@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:ilugan_passenger_mobile_app/screens/authentication/signup_fordiscounted.dart';
+import 'package:ilugan_passenger_mobile_app/screens/authentication/idverification.dart';
 import 'package:ilugan_passenger_mobile_app/widgets/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -120,7 +120,7 @@ class _PhotoIdScreenState extends State<PhotoIdScreen> {
       floatingActionButton: _imageFile != null
           ? FloatingActionButton.extended(
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (_)=>DiscountedSignUPScreen(idimage: _imageFile, acctype: widget.type,)));
+                Navigator.of(context).push(MaterialPageRoute(builder: (_)=>AdminVerification(idimage: _imageFile as File, type: widget.type,)));
               },
               label: const Text('Next'),
               icon: const Icon(Icons.arrow_forward),
